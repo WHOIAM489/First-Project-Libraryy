@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - คืนหนังสือ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" class="w-full h-full object-cover">
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </nav>
+    <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-10 flex flex-col items-center pb-24">
+        
+        <div id="step1-return" class="w-full flex flex-col items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-purple-700 text-center mb-2">คืนหนังสือที่หน้าเคาน์เตอร์บรรณารักษ์</h1>
+            <p class="text-sm text-gray-500 mb-8">รายการหนังสือ</p>
+
+            <div class="text-yellow-400 text-2xl mb-8">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+
+            <div class="w-full max-w-lg mb-8">
+                <div class="mb-4 flex justify-between items-end">
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-lg">คืนหนังสือ (<span id="totalSelectCount">0</span>)</h2>
+                        <p class="text-xs text-gray-500 font-light">Ensure all items are present at the counter</p>
+                    </div>
+                    <button onclick="selectAll()" class="text-purple-600 text-sm font-medium hover:underline">เลือกทั้งหมด</button>
+                </div>
+
+                <div id="returnBooksContainer" class="space-y-4"></div>
+            </div>
+
+            <div class="w-full max-w-sm flex flex-col items-center mt-4">
+                <p class="text-xs text-orange-500 font-bold mb-3 flex items-center gap-1 text-center leading-tight">
+                    <i class="fa-solid fa-circle-info"></i> สามารถส่งคืนได้แม้ค้างชำระ (ค่าปรับจะหยุดเดินทันที)<br>แต่หากไม่ชำระค่าปรับ จะไม่สามารถยืมเล่มใหม่ได้
+                </p>
+                <button onclick="submitReturn()" id="submitBtn" disabled class="w-full bg-[#8b31ff] hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2 text-lg">
+                    ส่งคำขอคืนหนังสือ <span id="btnSelectCount" class="text-sm bg-white/20 px-2 py-0.5 rounded-lg">(0 รายการ)</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="step2-success" class="hidden w-full flex flex-col items-center w-full max-w-2xl mt-4">
+            <div class="w-20 h-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-slate-800 mb-1">ส่งคำขอคืนสำเร็จ!</h2>
+            <p class="text-xs text-gray-500 mb-10">กรุณานำหนังสือไปส่งที่เคาน์เตอร์ และรอการอนุมัติจากบรรณารักษ์</p>
+
+            <div class="w-full bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-4 border-b border-gray-100 pb-3" id="successCountHeader">หนังสือที่รอการตรวจสอบ มี 2 รายการ</h3>
+                <div id="successBooksContainer" class="space-y-2 mb-8"></div>
+                <button onclick="window.location.href='main.html'" class="w-full bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                    กลับไปหน้าหลัก
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let selectedBookUids = []; 
+        let activeLoans = [];
+        let reservations = [];
+        let returnableBooks = []; 
+        
+        let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+
+        function getSimulatedDate() {
+            let d = new Date();
+            d.setDate(d.getDate() + simulatedDaysOffset);
+            d.setHours(0,0,0,0);
+            return d;
+        }
+
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1"><i class="fa-solid ${n.icon || 'fa-bell'}"></i></div>
+                        <div class="flex-grow pr-4"><h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4><p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p></div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../login.html';
+
+
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
+            }
+
+
+            renderNotifications();
+            updateCartBadge();
+
+            activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            returnableBooks = [];
+
+            activeLoans.forEach((book, index) => {
+                if(book.returnStatus !== 'pending') {
+                    returnableBooks.push({...book, _uid: 'act_' + index});
+                }
+            });
+            reservations.forEach((book, index) => {
+                if(book.status === 'ready' && book.returnStatus !== 'pending') {
+                    returnableBooks.push({...book, _uid: 'res_' + index});
+                }
+            });
+
+            renderReturnList();
+        });
+
+        function toggleSelect(uid) {
+            const index = selectedBookUids.indexOf(uid);
+            if (index > -1) selectedBookUids.splice(index, 1);
+            else selectedBookUids.push(uid);
+            renderReturnList();
+        }
+
+        function selectAll() {
+            if(selectedBookUids.length === returnableBooks.length) selectedBookUids = []; 
+            else selectedBookUids = returnableBooks.map(b => b._uid); 
+            renderReturnList();
+        }
+
+        function renderReturnList() {
+            const container = document.getElementById('returnBooksContainer');
+            container.innerHTML = '';
+            document.getElementById('totalSelectCount').textContent = selectedBookUids.length;
+            document.getElementById('btnSelectCount').textContent = `(${selectedBookUids.length} รายการ)`;
+            document.getElementById('submitBtn').disabled = selectedBookUids.length === 0;
+
+            if (returnableBooks.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl p-10 text-center shadow-sm border border-gray-100">
+                        <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-check-double"></i></div>
+                        <p class="text-slate-800 font-bold text-lg">คุณไม่มีหนังสือที่สามารถคืนได้</p>
+                        <p class="text-xs text-gray-400 mt-1">อาจอยู่ในระหว่างรออนุมัติการคืน</p>
+                    </div>`;
+                return;
+            }
+
+            returnableBooks.forEach(book => {
+                const isSelected = selectedBookUids.includes(book._uid);
+                const borderClass = isSelected ? 'border-purple-400 bg-purple-50/30' : 'border-gray-100 bg-white';
+                const iconClass = isSelected ? 'fa-solid fa-circle-check text-purple-600 text-xl' : 'fa-regular fa-circle text-gray-300 text-xl';
+
+                container.innerHTML += `
+                    <div onclick="toggleSelect('${book._uid}')" class="rounded-2xl p-4 shadow-sm border ${borderClass} flex items-center justify-between cursor-pointer transition-all hover:shadow-md">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100">
+                                <img src="${book.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">${book.title}</h3>
+                                <p class="text-xs text-gray-500 mb-1">${book.author}</p>
+                            </div>
+                        </div>
+                        <div class="pl-4 shrink-0"><i class="${iconClass}"></i></div>
+                    </div>`;
+            });
+        }
+
+        function submitReturn() {
+            if (selectedBookUids.length === 0) return;
+
+            if (confirm(`ยืนยันการส่งคำขอคืนหนังสือ ${selectedBookUids.length} เล่ม ใช่หรือไม่?\n(หากมีค่าปรับ ค่าปรับจะถูกหยุดนับทันที)`)) {
+                let successfullyReturnedBooks = []; 
+                let currentSimDate = getSimulatedDate();
+                currentSimDate.setHours(0,0,0,0);
+
+                const processBookForReturn = (book) => {
+                    book.returnStatus = "pending";
+                    book.lockedReturnDate = currentSimDate.getTime(); 
+                    
+                    let borrowTs = book.borrowTimestamp || Date.now();
+                    let borrowDate = new Date(borrowTs);
+                    borrowDate.setHours(0,0,0,0);
+                    let duration = parseInt(book.duration || 15);
+                    let dueDate = new Date(borrowDate);
+                    dueDate.setDate(dueDate.getDate() + duration);
+                    dueDate.setHours(0,0,0,0);
+                    
+                    if (currentSimDate.getTime() > dueDate.getTime()) {
+                        let diffTime = currentSimDate.getTime() - dueDate.getTime();
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        book.lockedFineAmount = diffDays * 5;
+                        book.lockedOverdueDays = diffDays;
+                        book.lockedDueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    } else {
+                        book.lockedFineAmount = 0;
+                        book.lockedOverdueDays = 0;
+                        book.lockedDueDateStr = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    }
+                    successfullyReturnedBooks.push(book);
+                };
+
+                activeLoans.forEach((book, index) => {
+                    if (selectedBookUids.includes('act_' + index)) processBookForReturn(book);
+                });
+
+                reservations.forEach((book, index) => {
+                    if (book.status === 'ready' && selectedBookUids.includes('res_' + index)) processBookForReturn(book);
+                });
+
+                localStorage.setItem('activeLoans', JSON.stringify(activeLoans));
+                localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+
+                showSuccessPage(successfullyReturnedBooks);
+            }
+        }
+
+        function showSuccessPage(returnedBooks) {
+            document.getElementById('step1-return').classList.add('hidden');
+            document.getElementById('step2-success').classList.remove('hidden');
+            document.getElementById('successCountHeader').textContent = `หนังสือที่ส่งคำขอคืน มี ${returnedBooks.length} รายการ`;
+
+            const container = document.getElementById('successBooksContainer');
+            container.innerHTML = '';
+            
+            returnedBooks.forEach(book => {
+                let fineAlert = book.lockedFineAmount > 0 ? `<p class="text-[10px] text-red-500 font-bold mt-1">ค้างชำระ: ${book.lockedFineAmount} บาท</p>` : '';
+                container.innerHTML += `
+                    <div class="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-14 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100">
+                                <img src="${book.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-0.5">${book.title}</h4>
+                                <p class="text-[10px] text-gray-500">${book.author}</p>
+                                ${fineAlert}
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            <span class="bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 border border-yellow-100">
+                                <i class="fa-solid fa-hourglass-half"></i> รอตรวจสอบ
+                            </span>
+                        </div>
+                    </div>`;
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

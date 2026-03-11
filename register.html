@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครใช้งาน UP Library</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        /* กันลืม: สไตล์เสริม */
+        input:invalid:not(:placeholder-shown),
+        select:invalid:not(:placeholder-shown) {
+            border-color: #ec4899;
+        }
+
+        input:valid:not(:placeholder-shown) {
+            border-color: #22c55e;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full flex overflow-hidden bg-white">
+
+    <div class="hidden lg:block lg:w-1/2 relative bg-gray-100 h-full">
+        <img src="https://www.up.ac.th/img/view/university-of-phayao2.jpg" alt="Background Image"
+            class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105">
+
+        <div
+            class="absolute top-6 left-6 z-20 flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl shadow-sm">
+            <img src="pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+
+            <div class="text-slate-800 leading-tight">
+                <h1 class="font-bold text-sm">UP Library</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex flex-col h-full bg-white">
+
+        <div class="w-full flex justify-end px-6 py-3 gap-4 items-center shrink-0">
+            <a href="#" class="text-slate-600 font-medium hover:text-purple-700 transition-colors text-xs">
+                <i class="fa-regular fa-circle-question mr-1"></i> Help
+            </a>
+            <div class="h-3 w-px bg-gray-300"></div>
+            <a href="#" class="text-slate-600 font-medium hover:text-purple-700 transition-colors text-xs">
+                <i class="fa-regular fa-envelope mr-1"></i> Contact
+            </a>
+        </div>
+
+        <div class="flex-grow flex items-center justify-center px-8 sm:px-12 lg:px-16 overflow-y-auto">
+
+            <form id="registerForm" class="w-full max-w-sm space-y-2">
+
+                <div class="mb-3 text-center lg:text-left">
+                    <h2 class="text-xl font-bold text-slate-800">สร้างบัญชีใหม่</h2>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 block mb-1">บัตรนักศึกษา/ผู้ดูแล <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-id-card text-gray-400"></i>
+                        </div>
+                        <input type="number" name="ID" required placeholder="68XXXXXXXX"
+                            class="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-gray-700 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">ชื่อ-สกุล <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-user text-gray-400 text-xs"></i>
+                        </div>
+                        <input type="text" name="fullname" required placeholder="ชื่อ-สกุล"
+                            class="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-gray-700 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">อีเมล <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-envelope text-gray-400 text-xs"></i>
+                        </div>
+                        <input type="email" name="email" required placeholder="อีเมล"
+                            class="w-full pl-8 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-gray-700 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">รหัสผ่าน <span
+                            class="text-red-500">*</span></label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-gray-400 text-xs"></i>
+                        </div>
+
+                        <input type="password" name="password" id="passwordInput" required minlength="8"
+                            placeholder="รหัสผ่านใหม่ (8ตัวอักษร)"
+                            class="w-full pl-8 pr-9 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-gray-700 transition-all">
+
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer z-10"
+                            onclick="togglePassword()">
+                            <i id="eyeIcon"
+                                class="fa-solid fa-eye text-gray-400 hover:text-purple-600 text-xs transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit"
+                        class="w-full bg-[#4a0080] hover:bg-purple-900 text-white font-bold py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                        สมัคร
+                    </button>
+
+                    <div class="text-center text-xs text-gray-600 mt-2">
+                        <a href="login.html" class="font-bold text-purple-700 hover:underline">มีบัญชีแล้วใช่ไหม</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <footer class="py-2 text-center shrink-0">
+            <p class="text-[10px] text-gray-400">© 202X UP Library. <a href="#" class="hover:underline">Terms &
+                    Conditions</a></p>
+        </footer>
+
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault(); 
+
+            const studentID = document.querySelector('input[name="ID"]').value;
+            const fullname = document.querySelector('input[name="fullname"]').value;
+            const email = document.querySelector('input[name="email"]').value;
+            const password = document.getElementById('passwordInput').value;
+
+            const userData = {
+                studentID: studentID,
+                fullname: fullname,
+                email: email,
+                password: password,
+                fines: 0,
+                borrowedCount: 0,
+                historyCount: 0
+            };
+
+            let allUsers = JSON.parse(localStorage.getItem('allLibraryUsers')) || [];
+
+            const isDuplicate = allUsers.some(user => user.studentID === studentID || user.email === email);
+            if (isDuplicate) {
+                alert('รหัสนิสิตหรืออีเมลนี้ถูกใช้งานไปแล้ว กรุณาเข้าสู่ระบบหรือใช้อีเมลอื่น!');
+                return;
+            }
+
+
+            allUsers.push(userData);
+            localStorage.setItem('allLibraryUsers', JSON.stringify(allUsers));
+
+            alert('ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบด้วยรหัสนิสิตและรหัสผ่านของคุณ');
+            window.location.href = 'login.html'; 
+        });
+    </script>
+</body>
+
+</html>

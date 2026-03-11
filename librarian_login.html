@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Login - UP Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .header-gradient {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full relative flex flex-col items-center justify-center overflow-hidden bg-slate-100">
+
+        <div class="absolute inset-0 z-0">
+        <img src="https://www.up.ac.th/img/view/university-of-phayao2.jpg" alt="Background Image"
+            class="object-cover w-full h-full">
+        <div class="absolute inset-0 bg-black/20"></div>
+    </div>
+
+    <div class="absolute top-6 left-6 z-20 flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl shadow-sm">
+        <img src="pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+        <div class="text-slate-800 leading-tight">
+            <h1 class="font-bold text-sm">UP Library</h1>
+            <p class="text-[9px] text-gray-500 uppercase tracking-widest">Admin System</p>
+        </div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-[450px] mx-4 bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+
+        <div class="header-gradient p-10 text-white h-40 flex flex-col justify-center relative">
+            <i class="fa-solid fa-shield-halved absolute right-6 top-1/2 -translate-y-1/2 text-7xl opacity-10"></i>
+            
+            <h1 class="text-2xl font-bold mb-1">ระบบบรรณารักษ์</h1>
+            <p class="text-sm text-gray-300 font-light">Librarian Access Only</p>
+        </div>
+
+        <div class="p-8 pb-10">
+            <form id="librarianLoginForm" class="space-y-6">
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-800">ชื่อบัญชีเจ้าหน้าที่ (Username)</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-user text-gray-400 text-lg"></i>
+                        </div>
+                        <input type="text" id="libUsername" required placeholder="กรอกชื่อบัญชีเจ้าหน้าที่"
+                            class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-700 transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-800">รหัสผ่าน (Password)</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-key text-gray-400 text-lg"></i>
+                        </div>
+
+                        <input type="password" id="libPassword" placeholder="••••••••" required
+                            class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent text-gray-700 transition-all">
+
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer text-gray-400 hover:text-slate-600"
+                            onclick="toggleLibPassword()">
+                            <i id="libEyeIcon" class="fa-regular fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                    เข้าสู่ระบบจัดการ <i class="fa-solid fa-arrow-right-to-bracket text-sm ml-1"> </i>
+                </button>
+
+            </form>
+
+            <div class="mt-6 text-center flex flex-col gap-3">
+                <div class="w-full border-t border-gray-100 pt-4">
+                    <a href="login.html" class="text-xs font-medium text-slate-500 hover:text-purple-600 hover:underline flex items-center justify-center gap-1.5 transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i> กลับไปหน้านักศึกษา
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleLibPassword() {
+            const passwordInput = document.getElementById('libPassword');
+            const eyeIcon = document.getElementById('libEyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+        
+        document.getElementById('librarianLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const inputUsername = document.getElementById('libUsername').value;
+            const inputPassword = document.getElementById('libPassword').value;
+
+
+            if (inputUsername === 'Day' && inputPassword === '123456789') {
+                localStorage.setItem('isLibrarianLoggedIn', 'true');
+                alert('ยืนยันตัวตนสำเร็จ! กำลังเข้าสู่ระบบบรรณารักษ์');
+                window.location.href = 'librarian/main.html';
+            } else {
+                alert('ชื่อบัญชีหรือรหัสผ่านไม่ถูกต้อง! ไม่อนุญาตให้เข้าถึง');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">UP Library - รายละเอียดหนังสือ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col relative">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="../user/Main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="../user/profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto px-6 py-8 pb-32">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2 text-sm text-gray-500 font-light">
+                <a href="../user/Main.html" class="hover:text-purple-600 transition-colors">หน้าหลัก</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-slate-800 font-medium" id="breadcrumbTitle">กำลังโหลด...</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4">
+                <div class="relative rounded-2xl shadow-xl overflow-hidden aspect-[2/3] bg-gray-200">
+                    <div class="absolute top-4 left-4 bg-[#ffc107] text-slate-900 text-[11px] font-bold px-3 py-1 rounded-full z-10 shadow-sm">TOP</div>
+                    <img id="bookCover" src="" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 flex flex-col">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 id="bookTitle" class="text-3xl font-bold text-slate-800 mb-2">กำลังโหลด...</h1>
+                        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 font-light">
+                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-user text-gray-400"></i> <span id="bookAuthor">-</span></span>
+                            <span>•</span><span>General Book</span>
+                        </div>
+                    </div>
+                    <div id="statusBadge" class="px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-gray-400"></div> กำลังตรวจสอบ...
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-[10px] text-gray-400 mb-1">ISBN</p><p id="bookIsbn" class="text-sm font-bold text-slate-700">-</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-[10px] text-gray-400 mb-1">หน้า</p><p id="bookPages" class="text-sm font-bold text-slate-700">-</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-[10px] text-gray-400 mb-1">ภาษา</p><p id="bookLanguage" class="text-sm font-bold text-slate-700">-</p></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-[10px] text-gray-400 mb-1">คะแนน</p><p class="text-sm font-bold text-slate-700 flex items-center gap-1"><i class="fa-solid fa-star text-[#ffc107] text-xs"></i> <span id="bookRating">-</span></p></div>
+                </div>
+
+                <div class="mt-6 bg-white p-6 rounded-2xl border border-purple-100 shadow-sm relative overflow-hidden">
+                    <i class="fa-solid fa-location-dot absolute -right-6 -bottom-8 text-9xl text-purple-50 z-0 transform rotate-12"></i>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 text-purple-700 font-bold mb-4">
+                            <i class="fa-solid fa-map-location-dot"></i> <span class="text-lg">Locate in Library</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div><p class="text-xs text-gray-400 mb-1">Call Number</p><span id="bookCallNumber" class="bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm font-bold font-mono">-</span></div>
+                            <div><p class="text-xs text-gray-400 mb-1">ที่ตั้ง</p><p id="bookLocation" class="text-sm font-bold text-slate-700">-</p></div>
+                            <div><p class="text-xs text-gray-400 mb-1">ชั้นวาง</p><p class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-book-journal-whills text-yellow-500"></i> <span id="bookShelf">-</span></p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-3">คำอธิบาย</h3>
+                    <p id="bookDescription" class="text-sm text-gray-600 font-light leading-relaxed mb-3">-</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40 p-4">
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex flex-col items-start gap-1">
+                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                        <i class="fa-solid fa-circle-info"></i> โดยจะพร้อมรับภายใน 24 ชั่วโมง
+                    </div>
+                    <p id="fineNoticeText" class="hidden text-red-500 text-xs font-bold animate-pulse">
+                        <i class="fa-solid fa-triangle-exclamation"></i> ไม่สามารถจองได้: มียอดค่าปรับค้างชำระ
+                    </p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <p class="text-[10px] text-gray-400 text-center mb-2">เลือกระยะเวลาการยืม</p>
+                        <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm font-medium text-slate-700" id="durationSelector">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="duration" value="3" class="accent-green-500"> 3 วัน</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="duration" value="7" class="accent-green-500"> 7 วัน</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="duration" value="15" class="accent-green-500" checked> 15 วัน</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="duration" value="30" class="accent-green-500"> 30 วัน</label>
+                        </div>
+                    </div>
+                    <button id="submitBtn" onclick="addToCart()" class="bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-check"></i> จองเลย
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        let currentBook = null;
+
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+
+        function getCurrentTotalFines() {
+            let total = 0;
+            const offset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            const now = new Date();
+            now.setDate(now.getDate() + offset);
+            now.setHours(0,0,0,0);
+
+            const activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const unpaidFines = JSON.parse(localStorage.getItem('unpaidFines')) || [];
+
+            unpaidFines.forEach(f => { total += (parseFloat(f.fineAmount) || 0); });
+
+            const checkOverdue = (book) => {
+                if (book.borrowTimestamp) {
+                    let dueDate = new Date(book.borrowTimestamp);
+                    dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                    dueDate.setHours(0,0,0,0);
+
+                    if (book.lockedFineAmount) {
+                        total += parseFloat(book.lockedFineAmount);
+                    } else if (now > dueDate) {
+                        let diffDays = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
+                        total += (diffDays * 5);
+                    }
+                }
+            };
+
+            activeLoans.forEach(checkOverdue);
+            reservations.forEach(r => { if(r.status === 'ready') checkOverdue(r); });
+
+            return total;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') window.location.href = '../login.html'; 
+
+
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
+            }
+            
+            renderNotifications();
+            updateCartBadge();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('id');
+
+            if(!bookId) {
+                alert('ไม่พบรหัสหนังสือ'); window.location.href = '../main.html'; return;
+            }
+
+            const libraryBooks = JSON.parse(localStorage.getItem('libraryBooks')) || [];
+            currentBook = libraryBooks.find(b => b.id === bookId);
+
+            if(!currentBook) {
+                alert('ไม่พบข้อมูลหนังสือเล่มนี้'); window.location.href = '../main.html'; return;
+            }
+
+
+            document.getElementById('pageTitle').textContent = `UP Library - ${currentBook.title}`;
+            document.getElementById('breadcrumbTitle').textContent = currentBook.title;
+            document.getElementById('bookTitle').textContent = currentBook.title;
+            document.getElementById('bookAuthor').textContent = currentBook.author;
+            document.getElementById('bookCover').src = currentBook.cover;
+            document.getElementById('bookIsbn').textContent = currentBook.isbn || '-';
+            document.getElementById('bookPages').textContent = currentBook.pages || '-';
+            document.getElementById('bookLanguage').textContent = currentBook.language || 'Thai';
+            document.getElementById('bookRating').textContent = currentBook.rating || '0.0';
+            document.getElementById('bookCallNumber').textContent = currentBook.callNumber || '-';
+            document.getElementById('bookLocation').textContent = currentBook.location || '-';
+            document.getElementById('bookShelf').textContent = currentBook.shelf || '-';
+            document.getElementById('bookDescription').textContent = currentBook.description || 'ไม่มีคำอธิบายเพิ่มเติม';
+
+
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            
+            const reservedCount = reservations.filter(r => r.id === currentBook.id).length;
+            const borrowedCount = activeLoans.filter(a => a.id === currentBook.id).length;
+            const inCartCount = cart.filter(c => c.id === currentBook.id).length;
+            const totalStock = parseInt(currentBook.totalStock || 1); 
+            const availableCount = Math.max(0, totalStock - (reservedCount + borrowedCount + inCartCount));
+
+            const statusBadge = document.getElementById('statusBadge');
+            const submitBtn = document.getElementById('submitBtn');
+            const fineNotice = document.getElementById('fineNoticeText');
+
+
+            const totalFineAmount = getCurrentTotalFines();
+            
+            if (totalFineAmount > 0) {
+                statusBadge.innerHTML = `<div class="w-2 h-2 rounded-full bg-red-500"></div> ไม่สามารถยืมได้ (มียอดค้างชำระ)`;
+                statusBadge.className = "bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2";
+                
+                submitBtn.disabled = true;
+                submitBtn.className = "bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-xl shadow-sm flex items-center gap-2 cursor-not-allowed";
+                submitBtn.innerHTML = `<i class="fa-solid fa-lock"></i> บัญชีถูกระงับ`;
+                
+                fineNotice.classList.remove('hidden');
+                fineNotice.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ค้างชำระ ${totalFineAmount} บาท กรุณาจ่ายค่าปรับก่อน`;
+            } 
+
+            else if(availableCount === 0) {
+                statusBadge.innerHTML = `<div class="w-2 h-2 rounded-full bg-red-500"></div> มีคนยืม/จองแล้ว (หมดชั่วคราว)`;
+                statusBadge.className = "bg-red-100 text-red-700 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2";
+                
+                submitBtn.disabled = true;
+                submitBtn.className = "bg-gray-300 text-gray-500 font-bold py-3 px-8 rounded-xl shadow-sm flex items-center gap-2 cursor-not-allowed";
+                submitBtn.innerHTML = `<i class="fa-solid fa-ban"></i> ของหมด ไม่สามารถจองได้`;
+            } else {
+                statusBadge.innerHTML = `<div class="w-2 h-2 rounded-full bg-green-500"></div> มีจำหน่าย - ${availableCount} เล่ม`;
+                statusBadge.className = "bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2";
+            }
+        });
+
+        function addToCart() {
+            const finalFineCheck = getCurrentTotalFines();
+            if(finalFineCheck > 0) {
+                alert(`ไม่สามารถจองได้! คุณมียอดค้างชำระค่าปรับ ${finalFineCheck} บาท`);
+                window.location.href = '../fines.html';
+                return;
+            }
+
+            const selectedDuration = document.querySelector('input[name="duration"]:checked').value;
+            let cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+
+            const bookInfo = {
+                id: currentBook.id,
+                title: currentBook.title,
+                callNumber: currentBook.callNumber,
+                author: currentBook.author,
+                duration: selectedDuration,
+                cover: currentBook.cover
+            };
+
+            cart.push(bookInfo);
+            localStorage.setItem('libraryCart', JSON.stringify(cart));
+            window.location.href = 'cart.html'; 
+        }
+    </script>
+</body>
+</html>

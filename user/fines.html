@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - ชำระค่าปรับ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-8 flex flex-col items-center pb-24">
+
+        <div id="step1-list" class="w-full flex flex-col items-center w-full max-w-2xl">
+            
+            <div class="w-full bg-gradient-to-r from-[#8b31ff] to-[#6d28d9] rounded-2xl p-8 text-white text-center shadow-lg mb-8 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <p class="text-sm font-light mb-1">ยอดค้างชำระเต็มจำนวน</p>
+                <h2 class="text-4xl font-bold mb-4" id="totalFineDisplay">0.00</h2>
+                <div class="inline-flex items-center gap-2 bg-white/20 px-4 py-1.5 rounded-full text-xs font-medium">
+                    <i class="fa-solid fa-triangle-exclamation"></i> ค้างชำระเงิน
+                </div>
+            </div>
+
+            <div class="w-full flex justify-between items-center mb-4 px-2">
+                <h3 class="font-bold text-slate-800 text-lg">รายการที่ค้างชำระ</h3>
+                <button onclick="selectAll()" class="text-purple-600 text-sm font-medium hover:underline">เลือกทั้งหมด</button>
+            </div>
+
+            <div id="fineItemsContainer" class="w-full space-y-4 mb-8">
+                </div>
+
+            <div class="w-full bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm text-gray-500" id="selectedCountText">Selected (0 items)</span>
+                    <span class="text-lg font-bold text-slate-800" id="selectedTotalDisplay">0.00</span>
+                </div>
+
+                <div class="flex gap-4">
+                    <button class="flex-1 bg-purple-50 text-purple-700 font-bold py-3.5 rounded-xl border border-purple-100 flex flex-col items-center justify-center gap-1 hover:bg-purple-100 transition-colors">
+                        <i class="fa-solid fa-qrcode text-lg"></i>
+                        <span class="text-[10px]">ชำระหน้าเคาน์เตอร์</span>
+                    </button>
+                    <button onclick="goToStep2()" id="payBtn" disabled class="flex-[2] bg-[#8b31ff] hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm md:text-base">
+                        ชำระเงินตอนนี้ <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step2-upload" class="hidden w-full flex flex-col items-center w-full max-w-2xl">
+            <div class="w-full text-left mb-6">
+                <h2 class="text-xl font-bold text-slate-800 mb-2">ยืนยันสลิปการชำระเงิน</h2>
+                <p class="text-sm text-gray-500 font-light">กรุณาอัปโหลดรูปภาพสลิปการโอนเงินเพื่อเป็นหลักฐาน เจ้าหน้าที่จะตรวจสอบภายใน 24 ชั่วโมง</p>
+            </div>
+
+            <div class="w-full bg-gradient-to-r from-[#8b31ff] to-[#6d28d9] rounded-2xl p-6 text-white text-center shadow-lg mb-8">
+                <p class="text-sm font-light mb-1">ยอดชำระที่เลือก</p>
+                <h2 class="text-3xl font-bold mb-2" id="uploadTotalDisplay">0.00</h2>
+            </div>
+
+            <div class="w-full mb-6 relative">
+                <p class="text-sm font-bold text-slate-800 mb-3">อัปโหลดสลิปการโอนเงิน <span class="text-red-500">*</span></p>
+                <input type="file" id="slipFileInput" class="hidden" accept="image/*" onchange="handleFileUpload(event)">
+                <div onclick="document.getElementById('slipFileInput').click()" id="uploadDropzone" class="border-2 border-dashed border-gray-300 rounded-2xl p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors bg-white group min-h-[200px] flex flex-col justify-center items-center">
+                    <div id="uploadPlaceholder">
+                        <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center text-xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <p class="font-bold text-slate-700 text-sm">คลิกเพื่ออัปโหลดสลิป</p>
+                        <p class="text-[10px] text-gray-400 mt-1">รองรับ PNG, JPG, JPEG</p>
+                    </div>
+                    <img id="slipPreview" src="" class="hidden w-full max-h-64 object-contain rounded-xl mx-auto shadow-sm">
+                </div>
+                <button id="reselectBtn" onclick="document.getElementById('slipFileInput').click()" class="hidden absolute top-10 right-4 bg-white/80 backdrop-blur border border-gray-200 text-gray-700 text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm hover:bg-white">
+                    <i class="fa-solid fa-rotate"></i> เปลี่ยนรูป
+                </button>
+            </div>
+
+            <button onclick="goToStep3()" class="w-full bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                ยืนยันการส่ง <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <div id="step3-success" class="hidden w-full flex flex-col items-center w-full max-w-md">
+            <div class="w-full bg-white rounded-3xl p-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] text-center relative overflow-hidden border border-gray-50">
+                <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4"><i class="fa-regular fa-circle-check"></i></div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-1">ส่งหลักฐานสำเร็จ</h2>
+                <p class="text-xs text-gray-500 mb-6 pb-6 border-b-2 border-dashed border-gray-100">บรรณารักษ์จะทำการตรวจสอบสลิปของท่าน</p>
+                <p class="text-xs text-gray-400 mb-1">ยอดชำระที่ส่งตรวจสอบ</p>
+                <h1 class="text-4xl font-bold text-purple-700 mb-8" id="successTotalDisplay">0.00</h1>
+                <a href="main.html" class="block w-full bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition-all text-sm text-center shadow-md">
+                    กลับหน้าหลัก
+                </a>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-4 text-center">หากข้อมูลถูกต้อง ค่าปรับจะถูกลบออกจากระบบภายใน 24 ชม.</p>
+        </div>
+
+    </main>
+
+    <div class="fixed bottom-4 left-4 z-50 flex gap-2 opacity-30 hover:opacity-100 transition-opacity">
+        <button onclick="skipTime()" class="bg-slate-800 text-white text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 font-bold cursor-pointer border-2 border-slate-700 hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-forward-fast text-yellow-400"></i> เร่งเวลา
+        </button>
+        <button onclick="resetTime()" class="bg-slate-800 text-white text-xs px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 font-bold cursor-pointer border-2 border-slate-700 hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-rotate-left text-blue-400"></i> รีเซ็ตเวลา
+        </button>
+    </div>
+
+    <script>
+        let allBorrowedBooks = []; 
+        let activeLoansRaw = [];
+        let reservationsRaw = [];
+        let unpaidFinesRaw = []; 
+        
+        let overdueBooks = [];
+        let selectedFines = []; 
+        let totalFine = 0;
+        
+        let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+
+        function getSimulatedDate() {
+            let d = new Date();
+            d.setDate(d.getDate() + simulatedDaysOffset);
+            d.setHours(0,0,0,0);
+            return d;
+        }
+
+        function skipTime() {
+            let inputDays = prompt("กรุณาระบุจำนวนวันที่ต้องการข้ามเวลาไปข้างหน้า", "10");
+            if(inputDays !== null && inputDays.trim() !== "" && !isNaN(inputDays)) {
+                simulatedDaysOffset += parseInt(inputDays);
+                localStorage.setItem('timeSkipOffset', simulatedDaysOffset);
+                alert(`เร่งเวลาไปข้างหน้าสำเร็จ!`);
+                loadDataAndCalculate();
+            }
+        }
+
+        function resetTime() {
+            simulatedDaysOffset = 0;
+            localStorage.setItem('timeSkipOffset', 0);
+            alert("รีเซ็ตเวลาเรียบร้อยแล้ว!");
+            loadDataAndCalculate();
+        }
+
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+        // ==========================================
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../login.html';
+            
+            // โหลดข้อมูลรูปโปรไฟล์และชื่อ
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
+            }
+
+            // สั่งอัปเดต Navbar
+            renderNotifications();
+            updateCartBadge();
+
+            loadDataAndCalculate();
+        });
+
+        function loadDataAndCalculate() {
+            activeLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            reservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            unpaidFinesRaw = JSON.parse(localStorage.getItem('unpaidFines')) || []; 
+            
+            allBorrowedBooks = [];
+            totalFine = 0;
+            overdueBooks = [];
+            selectedFines = []; 
+
+            const simDate = getSimulatedDate();
+
+            unpaidFinesRaw.forEach((book) => {
+                let fineAmount = parseFloat(book.fineAmount || 0);
+                if(fineAmount > 0) {
+                    let fineRecord = {
+                        _uid: book.id, 
+                        _source: 'unpaidFines',
+                        title: book.title,
+                        cover: book.cover,
+                        dueDateStr: book.dueDateStr || 'คืนแล้ว',
+                        fineAmount: fineAmount,
+                        overdueDays: book.overdueDays || 0,
+                        isReturned: true
+                    };
+                    overdueBooks.push(fineRecord);
+                    totalFine += fineAmount;
+                }
+            });
+
+            const processActiveLoan = (book, index, sourceName) => {
+                let borrowTs = book.borrowTimestamp || Date.now();
+                let borrowDate = new Date(borrowTs);
+                borrowDate.setHours(0,0,0,0);
+                let duration = parseInt(book.duration || 15);
+                let dueDate = new Date(borrowDate);
+                dueDate.setDate(dueDate.getDate() + duration);
+                dueDate.setHours(0,0,0,0);
+
+                if (book.lockedFineAmount && book.lockedFineAmount > 0) {
+                    overdueBooks.push({
+                        _uid: sourceName + '_' + index,
+                        _source: sourceName,
+                        title: book.title,
+                        cover: book.cover,
+                        dueDateStr: dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                        fineAmount: parseFloat(book.lockedFineAmount),
+                        overdueDays: book.lockedOverdueDays || 0,
+                        isLocked: true
+                    });
+                    totalFine += parseFloat(book.lockedFineAmount);
+                } 
+                else if (!book.lockedReturnDate) {
+                    if (simDate.getTime() > dueDate.getTime()) {
+                        let diffTime = simDate.getTime() - dueDate.getTime();
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        let fineToPay = diffDays * 5; 
+                        
+                        overdueBooks.push({
+                            _uid: sourceName + '_' + index,
+                            _source: sourceName,
+                            title: book.title,
+                            cover: book.cover,
+                            dueDateStr: dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                            fineAmount: fineToPay,
+                            overdueDays: diffDays,
+                            isLocked: false
+                        });
+                        totalFine += fineToPay;
+                    }
+                }
+            };
+
+            activeLoansRaw.forEach((book, index) => processActiveLoan(book, index, 'activeLoans'));
+            reservationsRaw.forEach((book, index) => {
+                if(book.status === 'ready') processActiveLoan(book, index, 'reservations');
+            });
+
+            let user = JSON.parse(localStorage.getItem('libraryUser'));
+            if (user) {
+                user.fines = totalFine;
+                localStorage.setItem('libraryUser', JSON.stringify(user));
+            }
+
+            renderStep1();
+        }
+
+        function renderStep1() {
+            document.getElementById('totalFineDisplay').textContent = totalFine.toFixed(2);
+            const container = document.getElementById('fineItemsContainer');
+            container.innerHTML = '';
+
+            if (overdueBooks.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl p-8 text-center shadow-sm border border-gray-100">
+                        <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-regular fa-face-smile"></i></div>
+                        <h3 class="font-bold text-slate-800">ยอดเยี่ยม!</h3>
+                        <p class="text-sm text-gray-500 mt-1">คุณไม่มีหนังสือที่ค้างชำระค่าปรับในขณะนี้</p>
+                    </div>`;
+                document.getElementById('payBtn').disabled = true;
+                updateSelectedTotal();
+                return;
+            }
+
+            overdueBooks.forEach(book => {
+                const isSelected = selectedFines.includes(book._uid);
+                const borderClass = isSelected ? 'border-purple-400 bg-purple-50/20' : 'border-gray-100 bg-white';
+                const checkClass = isSelected ? 'bg-purple-600 text-white border-purple-600' : 'bg-white border-gray-300 text-transparent';
+
+                let lockedBadge = '';
+                if (book.isReturned) {
+                    lockedBadge = `<span class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold mt-1 inline-block border border-red-100"><i class="fa-solid fa-triangle-exclamation"></i> คืนหนังสือแล้ว (บิลค้างชำระ)</span>`;
+                } else if (book.isLocked) {
+                    lockedBadge = `<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[9px] font-bold mt-1 inline-block">รอตรวจคืน (ค่าปรับหยุดนับ)</span>`;
+                }
+
+                container.innerHTML += `
+                    <div onclick="toggleSelect('${book._uid}')" class="rounded-2xl p-4 shadow-sm border ${borderClass} flex items-center justify-between cursor-pointer transition-all hover:shadow-md">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0">
+                                <img src="${book.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm leading-tight mb-0.5">${book.title}</h3>
+                                <p class="text-[10px] text-gray-400 mb-1">Due: ${book.dueDateStr}</p>
+                                <div class="bg-red-50 text-red-500 px-2 py-0.5 rounded text-[10px] font-bold inline-block">
+                                    เกินกำหนด ${book.overdueDays} วัน
+                                </div><br>
+                                ${lockedBadge}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end justify-between h-16">
+                            <div class="w-5 h-5 rounded border ${checkClass} flex items-center justify-center transition-colors"><i class="fa-solid fa-check text-[10px]"></i></div>
+                            <span class="font-bold text-purple-700 text-sm">${parseFloat(book.fineAmount).toFixed(2)} บาท</span>
+                        </div>
+                    </div>`;
+            });
+
+            updateSelectedTotal();
+        }
+
+        function toggleSelect(uid) {
+            const index = selectedFines.indexOf(uid);
+            if (index > -1) selectedFines.splice(index, 1);
+            else selectedFines.push(uid);
+            renderStep1();
+        }
+
+        function selectAll() {
+            if(selectedFines.length === overdueBooks.length) selectedFines = []; 
+            else selectedFines = overdueBooks.map(b => b._uid); 
+            renderStep1();
+        }
+
+        function updateSelectedTotal() {
+            let selectedSum = 0;
+            overdueBooks.forEach(b => {
+                if(selectedFines.includes(b._uid)) selectedSum += parseFloat(b.fineAmount);
+            });
+            document.getElementById('selectedCountText').textContent = `เลือก (${selectedFines.length} รายการ)`;
+            document.getElementById('selectedTotalDisplay').textContent = selectedSum.toFixed(2);
+            document.getElementById('payBtn').disabled = selectedFines.length === 0;
+        }
+
+        let finalAmountToPay = 0;
+
+        function goToStep2() {
+            finalAmountToPay = parseFloat(document.getElementById('selectedTotalDisplay').textContent);
+            document.getElementById('uploadTotalDisplay').textContent = finalAmountToPay.toFixed(2);
+            document.getElementById('step1-list').classList.add('hidden');
+            document.getElementById('step2-upload').classList.remove('hidden');
+            document.getElementById('pageTitle').textContent = 'ยืนยันสลิป';
+        }
+
+        let uploadedSlipBase64 = null; 
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if(file) {
+                if(file.size > 2 * 1024 * 1024) { alert("ไฟล์ใหญ่เกินไป กรุณาใช้ไฟล์ขนาดไม่เกิน 2MB"); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedSlipBase64 = e.target.result;
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    const preview = document.getElementById('slipPreview');
+                    preview.src = uploadedSlipBase64;
+                    preview.classList.remove('hidden');
+                    document.getElementById('reselectBtn').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function goToStep3() {
+            if(!uploadedSlipBase64) { alert('กรุณาอัปโหลดรูปภาพสลิปการโอนเงินก่อนกดยืนยันการส่ง'); return; }
+
+            document.getElementById('successTotalDisplay').textContent = finalAmountToPay.toFixed(2);
+            let pendingSlips = JSON.parse(localStorage.getItem('pendingSlips')) || [];
+            let currentUser = JSON.parse(localStorage.getItem('libraryUser')) || {};
+
+            overdueBooks.forEach(book => {
+                if(selectedFines.includes(book._uid)) {
+                    pendingSlips.push({
+                        id: 'slip_' + Date.now() + Math.floor(Math.random() * 100),
+                        userName: currentUser.fullname || 'นักศึกษา',
+                        userId: currentUser.studentID || 'ไม่ระบุ',
+                        bookTitle: book.title,
+                        bookCover: book.cover,
+                        dueDateStr: book.dueDateStr || '-',
+                        fineAmount: book.fineAmount,
+                        status: 'pending',
+                        slipImage: uploadedSlipBase64 
+                    });
+                }
+            });
+            localStorage.setItem('pendingSlips', JSON.stringify(pendingSlips));
+
+
+            let actModified = false;
+            let resModified = false;
+            let unpModified = false;
+
+            overdueBooks.forEach(book => {
+                if(selectedFines.includes(book._uid)) {
+                    if(book._source === 'activeLoans') {
+                        let idx = parseInt(book._uid.split('_')[1]);
+                        activeLoansRaw[idx].borrowTimestamp = getSimulatedDate().getTime(); 
+                        delete activeLoansRaw[idx].lockedReturnDate; 
+                        delete activeLoansRaw[idx].lockedFineAmount; 
+                        delete activeLoansRaw[idx].lockedOverdueDays; 
+                        actModified = true;
+                    } 
+                    else if (book._source === 'reservations') {
+                        let idx = parseInt(book._uid.split('_')[1]);
+                        reservationsRaw[idx].borrowTimestamp = getSimulatedDate().getTime();
+                        delete reservationsRaw[idx].lockedReturnDate;
+                        delete reservationsRaw[idx].lockedFineAmount; 
+                        delete reservationsRaw[idx].lockedOverdueDays; 
+                        resModified = true;
+                    }
+                    else if (book._source === 'unpaidFines') {
+                        // ลบบิลถาวรทิ้งเลย
+                        unpaidFinesRaw = unpaidFinesRaw.filter(f => f.id !== book._uid);
+                        unpModified = true;
+                    }
+                }
+            });
+
+            if(actModified) localStorage.setItem('activeLoans', JSON.stringify(activeLoansRaw));
+            if(resModified) localStorage.setItem('libraryReservations', JSON.stringify(reservationsRaw));
+            if(unpModified) localStorage.setItem('unpaidFines', JSON.stringify(unpaidFinesRaw));
+            
+
+            loadDataAndCalculate(); 
+
+            document.getElementById('step2-upload').classList.add('hidden');
+            document.getElementById('step3-success').classList.remove('hidden');
+            document.getElementById('pageTitle').textContent = 'ใบเสร็จรับเงิน';
+        }
+    </script>
+</body>
+</html>

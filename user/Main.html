@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - หน้าหลัก</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col relative">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="bg-white pb-6 pt-4 px-6 border-b border-gray-100">
+        <div class="max-w-6xl mx-auto space-y-4">
+            <div class="relative shadow-sm rounded-full">
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </div>
+                <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') performSearch()" placeholder="ค้นหาชื่อหนังสือ, ผู้แต่ง หรือ ISBN (เช่น Clean Code)"
+                    class="w-full pl-12 pr-24 py-3.5 bg-gray-50 border-none rounded-full focus:ring-2 focus:ring-purple-200 focus:bg-white transition-all text-gray-700">
+                <button onclick="performSearch()" class="absolute right-1.5 top-1.5 bottom-1.5 bg-[#8b31ff] hover:bg-purple-700 text-white px-6 rounded-full font-medium transition-colors shadow-md">
+                    ค้นหา
+                </button>
+            </div>
+            
+            <div class="flex gap-2 overflow-x-auto pb-2 hide-scroll" id="filterContainer">
+                <button id="filter-all" onclick="setFilter('all')" class="filter-btn px-4 py-1.5 bg-white text-slate-800 rounded-full text-sm font-bold whitespace-nowrap transition-all border-2 border-slate-800 shadow-sm">ทั้งหมด</button>
+                <button id="filter-title" onclick="setFilter('title')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full text-sm font-medium whitespace-nowrap transition-all border-2 border-transparent">ชื่อเรื่อง</button>
+                <button id="filter-author" onclick="setFilter('author')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full text-sm font-medium whitespace-nowrap transition-all border-2 border-transparent">ผู้เขียน</button>
+                <button id="filter-isbn" onclick="setFilter('isbn')" class="filter-btn px-4 py-1.5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full text-sm font-medium whitespace-nowrap transition-all border-2 border-transparent">ISBN</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8">
+                <div id="searchResultsSection" class="hidden space-y-4 mb-10">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
+                        <h2 class="text-xl font-bold text-slate-800">ผลการค้นหา <span id="searchScopeText" class="text-sm font-normal text-purple-600 bg-purple-50 px-2 py-1 rounded ml-2"></span></h2>
+                        <button onclick="clearSearch()" class="text-sm font-bold text-red-500 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-xmark"></i> ยกเลิกค้นหา
+                        </button>
+                    </div>
+                    <div id="searchResultsContainer" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                </div>
+
+                <div id="mainContentSection" class="space-y-10">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold text-slate-800">การยืมที่ใช้งานอยู่</h2>
+                            <a href="history.html" class="text-purple-600 text-sm font-bold hover:underline">ดูประวัติ</a>
+                        </div>
+                        <div id="emptyLoansState" class="bg-white rounded-2xl shadow-sm p-10 flex flex-col items-center justify-center text-center border border-gray-100 h-64">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                <i class="fa-solid fa-box-open text-3xl text-gray-300"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-600">ยังไม่ได้ยืมหนังสือ</h3>
+                            <button onclick="document.getElementById('searchInput').focus()" class="mt-5 px-6 py-2 bg-purple-50 text-purple-700 text-sm font-medium rounded-lg hover:bg-purple-100 transition-colors">
+                                ค้นหาหนังสือเลย
+                            </button>
+                        </div>
+                        <div id="activeLoansContainer" class="hidden flex flex-col gap-4"></div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold text-slate-800">หนังสือในห้องสมุด</h2>
+                            <div class="flex gap-2">
+                                <button onclick="scrollBooks('left')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors shadow-sm bg-white">
+                                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                                </button>
+                                <button onclick="scrollBooks('right')" class="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors shadow-sm bg-white">
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="bookList" class="flex gap-4 overflow-x-auto pb-6 hide-scroll snap-x scroll-smooth"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <h2 class="text-xl font-bold text-slate-800 mb-2">การดำเนินการด่วน</h2>
+                <a href="digital_id.html" class="block w-full bg-gradient-to-br from-[#8b31ff] to-[#6d28d9] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-transform cursor-pointer">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div class="relative z-10 text-center">
+                        <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">MY DIGITAL ID</p>
+                        <h3 id="digitalIdDisplay" class="text-2xl font-bold tracking-widest mb-6">------</h3>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg p-3 inline-flex items-center gap-2 group-hover:bg-white/30 transition-colors">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                            <span class="text-sm font-medium">Tap to Scan</span>
+                        </div>
+                    </div>
+                </a>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="return.html" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow aspect-square block text-center">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-1"><i class="fa-solid fa-book-bookmark"></i></div>
+                        <span class="text-sm font-bold text-slate-700">คืนหนังสือ</span>
+                    </a>
+                    <a href="fines.html" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow aspect-square block text-center relative overflow-visible">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mb-1"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <span class="text-sm font-bold text-slate-700">จ่าย ค่าปรับ</span>
+                        <span id="fineBadge" class="hidden absolute -top-2 -right-2 min-w-[24px] h-[24px] bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white px-1 shadow-md">0</span>
+                    </a>
+                    <a href="library_rooms.html" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow aspect-square block text-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mb-1"><i class="fa-solid fa-door-open"></i></div>
+                        <span class="text-sm font-bold text-slate-700">ห้องสมุด</span>
+                    </a>
+                    <a href="reservations.html" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow aspect-square block text-center relative">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-1"><i class="fa-solid fa-truck-fast"></i></div>
+                        <span class="text-sm font-bold text-slate-700">การจองของฉัน</span>
+                    </a>
+                    <a href="help.html" class="col-span-2 bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-center justify-center gap-3 hover:shadow-md transition-shadow block">
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"><i class="fa-solid fa-circle-question"></i></div>
+                        <span class="text-sm font-bold text-slate-700">ต้องการความช่วยเหลือ</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+        let currentFilter = 'all'; 
+        let globalBooks = []; 
+
+        function loadLibraryBooks() {
+            globalBooks = JSON.parse(localStorage.getItem('libraryBooks')) || [];
+            renderRecommendedBooks();
+        }
+
+        function renderRecommendedBooks() {
+            const container = document.getElementById('bookList'); container.innerHTML = '';
+            if (globalBooks.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-400 py-4">ยังไม่มีหนังสือในระบบ</p>';
+                return;
+            }
+            const bgColors = ['bg-[#f4f2f0]', 'bg-[#1e4a55]', 'bg-[#5d9b90]', 'bg-[#f4ebd0]', 'bg-[#326966]'];
+            globalBooks.forEach((book, index) => {
+                let colorClass = bgColors[index % bgColors.length];
+                container.innerHTML += `
+                    <a href="../BOOKK/book_details.html?id=${book.id}" class="min-w-[150px] md:min-w-[170px] cursor-pointer snap-start block group">
+                        <div class="aspect-[3/4] w-full ${colorClass} rounded-2xl overflow-hidden mb-3 relative shadow-sm group-hover:shadow-md transition-all group-hover:-translate-y-1 p-2">
+                            <img src="${book.cover}" class="w-full h-full object-cover rounded-xl shadow-lg">
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm truncate">${book.title}</h3>
+                        <p class="text-[11px] text-purple-600/70 truncate mt-0.5">${book.author}</p>
+                    </a>`;
+            });
+        }
+
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.className = 'filter-btn px-4 py-1.5 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full text-sm font-medium whitespace-nowrap transition-all border-2 border-transparent');
+            const activeBtn = document.getElementById(`filter-${filterType}`);
+            activeBtn.className = 'filter-btn px-4 py-1.5 bg-white text-slate-800 rounded-full text-sm font-bold whitespace-nowrap transition-all border-2 border-slate-800 shadow-sm';
+            
+            const searchInput = document.getElementById('searchInput');
+            if(filterType === 'title') searchInput.placeholder = "ค้นหาจาก 'ชื่อเรื่อง' เท่านั้น...";
+            else if(filterType === 'author') searchInput.placeholder = "ค้นหาจาก 'ผู้เขียน' เท่านั้น...";
+            else if(filterType === 'isbn') searchInput.placeholder = "ค้นหาจาก 'ISBN' เท่านั้น...";
+            else searchInput.placeholder = "ค้นหาชื่อหนังสือ, ผู้แต่ง หรือ ISBN...";
+            
+            if(searchInput.value.trim() !== '') performSearch();
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const mainContent = document.getElementById('mainContentSection');
+            const searchSection = document.getElementById('searchResultsSection');
+            const searchContainer = document.getElementById('searchResultsContainer');
+            const scopeText = document.getElementById('searchScopeText');
+
+            if (!query) { clearSearch(); return; }
+
+            mainContent.classList.add('hidden');
+            searchSection.classList.remove('hidden');
+
+            let filterNameTH = "ทั้งหมด";
+            if(currentFilter === 'title') filterNameTH = "ชื่อเรื่อง";
+            if(currentFilter === 'author') filterNameTH = "ผู้เขียน";
+            if(currentFilter === 'isbn') filterNameTH = "ISBN";
+            scopeText.textContent = `(ค้นหาในหมวด: ${filterNameTH})`;
+
+            const results = globalBooks.filter(b => {
+                let isbnVal = b.isbn ? b.isbn.toLowerCase() : '';
+                if (currentFilter === 'all') return b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query) || isbnVal.includes(query);
+                else if (currentFilter === 'title') return b.title.toLowerCase().includes(query);
+                else if (currentFilter === 'author') return b.author.toLowerCase().includes(query);
+                else if (currentFilter === 'isbn') return isbnVal.includes(query);
+                return false;
+            });
+
+            searchContainer.innerHTML = '';
+            if (results.length === 0) {
+                searchContainer.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500"><i class="fa-solid fa-magnifying-glass text-2xl mb-2 text-gray-300 block"></i>ไม่พบหนังสือที่ตรงกับ "${query}"</div>`;
+            } else {
+                results.forEach(book => {
+                    let ratingVal = book.rating || '4.5';
+                    searchContainer.innerHTML += `
+                        <a href="../BOOKK/book_details.html?id=${book.id}" class="bg-white p-3 rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-100 block group">
+                            <div class="aspect-[3/4] w-full bg-gray-200 rounded-xl overflow-hidden mb-3 relative group-hover:-translate-y-1 transition-transform">
+                                <img src="${book.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-sm truncate">${book.title}</h3>
+                            <p class="text-[11px] text-gray-500 truncate mt-0.5">${book.author}</p>
+                            <div class="flex items-center gap-1 mt-1 text-[11px] text-[#ffc107]">
+                                <i class="fa-solid fa-star"></i> <span class="text-slate-600 font-medium">${ratingVal}</span>
+                            </div>
+                        </a>`;
+                });
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mainContentSection').classList.remove('hidden');
+            document.getElementById('searchResultsSection').classList.add('hidden');
+        }
+
+        function scrollBooks(direction) {
+            const container = document.getElementById('bookList');
+            const scrollAmount = 200;
+            if (direction === 'left') { container.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); } 
+            else { container.scrollBy({ left: scrollAmount, behavior: 'smooth' }); }
+        }
+
+        function cancelPendingLoan(bookId) {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองหนังสือเล่มนี้?')) {
+                let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+                let loanHistory = JSON.parse(localStorage.getItem('loanHistory')) || []; 
+                
+                const bookToCancel = reservations.find(book => book.id === bookId);
+                if(bookToCancel) {
+                    bookToCancel.cancelDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    bookToCancel.status = "Cancelled";
+                    loanHistory.push(bookToCancel);
+                    localStorage.setItem('loanHistory', JSON.stringify(loanHistory));
+                }
+
+                reservations = reservations.filter(book => book.id !== bookId);
+                localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+                
+                alert('ยกเลิกการจองสำเร็จ หนังสือถูกเก็บในประวัติแล้ว');
+                window.location.reload(); 
+            }
+        }
+
+        function updateActiveLoansDisplay() {
+            const activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const unpaidFines = JSON.parse(localStorage.getItem('unpaidFines')) || []; 
+            let allDisplayBooks = [];
+            
+            let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            let d = new Date(); d.setDate(d.getDate() + simulatedDaysOffset); d.setHours(0,0,0,0); 
+
+            let currentTotalFine = 0;
+            unpaidFines.forEach(f => { if (f.fineAmount && f.fineAmount > 0) currentTotalFine += parseFloat(f.fineAmount); });
+            
+            activeLoans.forEach(book => {
+                let borrowTs = book.borrowTimestamp || Date.now();
+                let borrowDate = new Date(borrowTs);
+                borrowDate.setHours(0,0,0,0);
+                let dueDate = new Date(borrowDate);
+                dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                dueDate.setHours(0,0,0,0);
+
+                if (book.lockedFineAmount && book.lockedFineAmount > 0) {
+                    currentTotalFine += parseFloat(book.lockedFineAmount);
+                } else if (!book.lockedReturnDate) {
+                    let dateToCompare = new Date(d);
+                    dateToCompare.setHours(0,0,0,0);
+                    if(dateToCompare.getTime() > dueDate.getTime()) {
+                        let diffDays = Math.ceil((dateToCompare.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                        currentTotalFine += (diffDays * 5);
+                    }
+                }
+            });
+
+            let user = JSON.parse(localStorage.getItem('libraryUser'));
+            if (user) {
+                user.fines = currentTotalFine;
+                localStorage.setItem('libraryUser', JSON.stringify(user));
+                const fineBadge = document.getElementById('fineBadge');
+                if(currentTotalFine > 0) {
+                    fineBadge.textContent = currentTotalFine.toFixed(0);
+                    fineBadge.classList.remove('hidden');
+                } else {
+                    fineBadge.classList.add('hidden');
+                }
+            }
+
+            reservations.forEach(book => {
+                if(book.status === 'pending') allDisplayBooks.push({...book, displayType: 'pending'});
+                if(book.status === 'ready') allDisplayBooks.push({...book, displayType: 'active'});
+            });
+            activeLoans.forEach(book => { allDisplayBooks.push({...book, displayType: 'active'}); });
+
+            const container = document.getElementById('activeLoansContainer');
+            container.innerHTML = '';
+
+            if(allDisplayBooks.length > 0) {
+                document.getElementById('emptyLoansState').classList.add('hidden');
+                container.classList.remove('hidden');
+
+                allDisplayBooks.forEach(book => {
+                    let badgeHTML = ''; let actionButtonsHTML = ''; let fineInfoHTML = ''; 
+
+                    if (book.displayType === 'pending') {
+                        badgeHTML = `<div class="bg-yellow-50 text-yellow-600 text-[10px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap"><i class="fa-solid fa-hourglass-half mr-1"></i> กำลังรออนุมัติจอง</div>`;
+                        actionButtonsHTML = `
+                            <a href="../BOOKK/book_details.html?id=${book.id}" class="inline-block bg-gray-50 hover:bg-gray-100 text-slate-700 text-xs font-bold py-2 px-4 rounded-lg transition-colors border border-gray-100">รายละเอียดหนังสือ</a>
+                            <button onclick="cancelPendingLoan('${book.id}')" class="inline-block bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold py-2 px-3 rounded-lg transition-colors border border-red-100">
+                                <i class="fa-solid fa-xmark mr-1"></i> ยกเลิกจอง
+                            </button>
+                        `;
+                    } else {
+                        if (book.returnStatus === 'pending') {
+                            badgeHTML = `<div class="bg-orange-50 text-orange-500 text-[10px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap"><i class="fa-solid fa-arrows-spin mr-1"></i> รออนุมัติการคืน</div>`;
+                            actionButtonsHTML = `<span class="text-xs text-orange-400 font-medium py-2">กำลังรอบรรณารักษ์อนุมัติการคืนที่หน้าเคาน์เตอร์...</span>`;
+                        } else {
+                            let daysLeft = 0;
+                            let borrowTs = book.borrowTimestamp || Date.now();
+                            let borrowDate = new Date(borrowTs);
+                            let dueDate = new Date(borrowDate);
+                            dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                            dueDate.setHours(0,0,0,0);
+                            
+                            let dateToCompare = new Date(d);
+                            dateToCompare.setHours(0,0,0,0);
+
+                            if(dateToCompare.getTime() > dueDate.getTime()) {
+                                daysLeft = 0; 
+                                let overdueDays = Math.ceil((dateToCompare.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+                                fineInfoHTML = `<p class="text-[10px] text-red-600 font-bold mt-1 tracking-tight">ค้างชำระ: ${overdueDays * 5} บาท</p>`;
+                                badgeHTML = `<div class="bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm animate-pulse">เกินกำหนดส่ง!</div>`;
+                            } else {
+                                let diffTime = dueDate.getTime() - dateToCompare.getTime();
+                                daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                                let badgeClass = daysLeft <= 3 ? 'bg-orange-100 text-orange-600' : 'bg-green-50 text-green-600';
+                                badgeHTML = `<div class="${badgeClass} text-[10px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap">เหลืออีก ${daysLeft} วัน</div>`;
+                            }
+                            actionButtonsHTML = `<a href="../BOOKK/book_details.html?id=${book.id}" class="inline-block bg-gray-50 hover:bg-gray-100 text-slate-700 text-xs font-bold py-2 px-4 rounded-lg transition-colors border border-gray-100">รายละเอียดหนังสือ</a>`;
+                        }
+                    }
+
+                    container.innerHTML += `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4 transition-all hover:shadow-md">
+                        <div class="w-[88px] h-[128px] shrink-0 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                            <img src="${book.cover}" alt="Cover" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow flex flex-col justify-between py-1 relative">
+                            <div class="flex justify-between items-start gap-4">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-base md:text-lg leading-tight mb-1">${book.title}</h3>
+                                    <p class="text-sm text-gray-500">${book.author}</p>
+                                    <p class="text-[11px] text-gray-400 mt-1 uppercase">ID: ${book.callNumber || '-'}</p>
+                                    ${fineInfoHTML}
+                                </div>
+                                ${badgeHTML}
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                ${actionButtonsHTML}
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                document.getElementById('emptyLoansState').classList.remove('hidden');
+                container.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') window.location.href = '../login.html'; 
+
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.studentID) document.getElementById('digitalIdDisplay').textContent = storedUser.studentID;
+                
+                // ดึงรูปโปรไฟล์มาแสดง ถ้ามี
+                if (storedUser.profilePic) {
+                    document.getElementById('navProfileImage').src = storedUser.profilePic;
+                }
+            }
+
+            renderNotifications();
+            loadLibraryBooks(); 
+            updateCartBadge(); 
+            updateActiveLoansDisplay();
+            
+            setInterval(() => {
+                updateActiveLoansDisplay();
+                updateCartBadge();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - Your Digital Pass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        /* ซ่อน Scrollbar ของการแจ้งเตือน */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col overflow-x-hidden">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="navUserNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow w-full max-w-5xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-24">
+        
+        <div class="w-full md:w-1/2 max-w-md">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Your Digital Pass</h1>
+            <p class="text-sm text-gray-500 mb-8 leading-relaxed">
+                ใช้บัตรดิจิทัลนี้เพื่อเข้าใช้ห้องสมุด ยืมหนังสือ และยืนยันสถานะนักศึกษาของคุณโปรดตรวจสอบให้แน่ใจว่าได้ตั้งค่าความสว่างหน้าจอไว้ที่ระดับสูงสำหรับการสแกน
+            </p>
+            
+            <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex gap-4 shadow-sm">
+                <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
+                <div>
+                    <h4 class="text-sm font-bold text-blue-800 mb-1">Gate Access</h4>
+                    <p class="text-xs text-blue-600/80 leading-relaxed">สแกนคิวอาร์โค้ดที่ประตูทางเข้า หากเครื่องสแกนใช้งานไม่ได้ กรุณาติดต่อเจ้าหน้าที่ห้องสมุด</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/2 flex flex-col items-center">
+            
+            <div class="w-full max-w-[320px] bg-gradient-to-b from-[#8723ff] via-[#6515cf] to-[#45099e] rounded-[2rem] shadow-2xl p-6 text-white relative overflow-hidden transform transition-transform hover:-translate-y-1 duration-300">
+                
+                <div class="absolute bottom-0 left-0 w-full h-[6px] bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500"></div>
+                
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="fa-solid fa-layer-group text-xs"></i>
+                        </div>
+                        <div class="leading-none">
+                            <p class="text-[7px] opacity-80 uppercase tracking-widest mb-0.5">University of Phayao</p>
+                            <p class="font-bold text-sm tracking-wide">UP Library</p>
+                        </div>
+                    </div>
+                    <span class="border border-white/30 bg-white/10 px-2 py-1 rounded text-[8px] font-bold tracking-wider uppercase backdrop-blur-sm">STUDENT</span>
+                </div>
+
+                <div class="flex justify-center mb-4">
+                    <div class="w-[100px] h-[100px] rounded-full border-[3px] border-[#f4c6aa] bg-[#fce4d4] overflow-hidden shadow-lg p-1 relative">
+                        <img id="cardProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-full">
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <h2 id="cardName" class="text-xl font-bold mb-1 tracking-wide">กำลังโหลด...</h2>
+                    <div class="bg-white/15 inline-block px-4 py-1 rounded-full backdrop-blur-md mb-3 border border-white/10">
+                        <p id="cardId" class="text-sm font-mono tracking-[0.2em] font-bold shadow-sm">--------</p>
+                    </div>
+                    <p id="cardFaculty" class="text-[11px] text-purple-200 px-2 leading-tight">University of Phayao</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-3 flex justify-center mb-1 shadow-inner relative group cursor-pointer" onclick="refreshQR()">
+                    <div class="absolute inset-0 bg-black/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-rotate-right text-gray-800 text-2xl drop-shadow-md"></i>
+                    </div>
+                    <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=UPLibrary" alt="QR Code" class="w-full aspect-square object-cover rounded-xl transition-transform duration-300">
+                </div>
+            </div>
+
+            <div class="w-full max-w-[320px] flex gap-3 mt-6">
+                <button onclick="refreshQR()" class="flex-1 bg-white border border-gray-200 text-slate-700 hover:bg-gray-50 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
+                    <i class="fa-solid fa-rotate-right"></i> รีเฟรชโค้ด
+                </button>
+                <button onclick="savePass()" class="flex-1 bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md transition-colors">
+                    <i class="fa-solid fa-download"></i> บันทึกภาพ
+                </button>
+            </div>
+            
+            <p class="text-[10px] text-gray-400 mt-5 font-light tracking-wide">Last updated: <span id="lastUpdate" class="font-medium text-gray-500">...</span></p>
+
+        </div>
+
+    </main>
+
+    <script>
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') window.location.href = '../login.html';
+
+
+            const user = JSON.parse(localStorage.getItem('libraryUser'));
+            
+            if (user) {
+                const studentId = user.studentID || '64012345';
+                
+
+                document.getElementById('cardName').textContent = user.fullname || 'Unknown User';
+                document.getElementById('cardId').textContent = studentId;
+                
+
+                if (user.fullname) {
+                    const firstName = user.fullname.split(' ')[0]; // เอาแค่ชื่อแรก
+                    document.getElementById('navUserNameDisplay').textContent = `สวัสดี, ${firstName}`;
+                }
+                if (user.profilePic) {
+                    document.getElementById('navProfileImage').src = user.profilePic;
+                    document.getElementById('cardProfileImage').src = user.profilePic; // อัปเดตรูปบนบัตรด้วย
+                }
+
+
+                if (user.major) {
+                    document.getElementById('cardFaculty').textContent = user.major;
+                }
+
+
+                updateQRCode(studentId);
+            }
+
+
+            updateTimestamp();
+            renderNotifications();
+            updateCartBadge();
+        });
+
+        function updateQRCode(dataStr) {
+            const random = Math.floor(Math.random() * 1000);
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=UP_${dataStr}_${random}`;
+            
+            const img = document.getElementById('qrImage');
+            img.style.opacity = '0.5'; 
+            
+            setTimeout(() => {
+                img.src = qrUrl;
+                img.style.opacity = '1';
+                updateTimestamp();
+            }, 300); 
+        }
+
+        function refreshQR() {
+            const user = JSON.parse(localStorage.getItem('libraryUser'));
+            const studentId = user ? (user.studentID || 'UPLibrary') : 'UPLibrary';
+            updateQRCode(studentId);
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('lastUpdate').textContent = now.toLocaleDateString('en-US', options) + ' PM';
+        }
+
+        function savePass() {
+            alert('กำลังดาวน์โหลดภาพบัตร Digital ID ของคุณ...');
+        }
+    </script>
+</body>
+</html>

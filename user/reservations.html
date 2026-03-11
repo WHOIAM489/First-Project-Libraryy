@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - การจองของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        /* ซ่อน Scrollbar ของการแจ้งเตือน */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col relative pb-20">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-8 w-full">
+        <div class="mb-8">
+            <div class="flex items-center gap-2 text-xs text-gray-500 font-light mb-2">
+                <a href="main.html" class="hover:text-purple-600">หน้าหลัก</a>
+                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                <span class="text-slate-800 font-medium">การจอง</span>
+            </div>
+            <h1 class="text-3xl font-bold text-slate-800">การจองของฉัน</h1>
+            <p class="text-sm text-gray-500">ติดตามสถานะหนังสือที่คุณขอและสถานะคิวรอ</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-medium mb-1">การจองทั้งหมด</p>
+                    <p class="text-3xl font-bold text-slate-800" id="statTotal">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl"><i class="fa-solid fa-bookmark"></i></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-medium mb-1">พร้อมรับ</p>
+                    <p class="text-3xl font-bold text-green-500" id="statReady">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl"><i class="fa-regular fa-circle-check"></i></div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-gray-500 font-medium mb-1">กำลังรออนุมัติ</p>
+                    <p class="text-3xl font-bold text-yellow-500" id="statPending">0</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-500 flex items-center justify-center text-xl"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-8 space-y-6" id="reservationsList">
+                </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                
+                <div class="bg-[#8b31ff] rounded-3xl p-6 text-white shadow-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-regular fa-bell"></i></div>
+                        <h3 class="font-bold text-lg">รับการแจ้งเตือน</h3>
+                    </div>
+                    <p class="text-xs font-light text-purple-100 mb-6">รับการแจ้งเตือนทันทีเมื่อหนังสือที่คุณจองไว้พร้อมให้มารับ</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium">การแจ้งเตือนทางอีเมล</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggleReservationEmail" class="sr-only peer" onchange="saveNotificationSettings()">
+                                <div class="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500 border border-white/30"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center gap-2 text-yellow-500 font-bold mb-4">
+                        <i class="fa-solid fa-circle-info"></i> กฎการจอง
+                    </div>
+                    <ul class="text-xs text-gray-600 space-y-3 list-disc pl-4 marker:text-purple-400">
+                        <li>คุณมีเวลารับภายในเวลาทำการวันที่จอง</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+
+        function renderReservations() {
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const container = document.getElementById('reservationsList');
+
+            let readyCount = reservations.filter(r => r.status === 'ready').length;
+            let pendingCount = reservations.filter(r => r.status === 'pending').length;
+            
+            document.getElementById('statTotal').textContent = reservations.length;
+            document.getElementById('statReady').textContent = readyCount;
+            document.getElementById('statPending').textContent = pendingCount;
+            
+            container.innerHTML = '';
+
+            if(reservations.length === 0) {
+                container.innerHTML = `<div class="bg-white p-10 rounded-3xl text-center text-gray-400 border border-gray-100 shadow-sm"><i class="fa-solid fa-box-open text-4xl mb-4 text-gray-300"></i><br>ไม่มีรายการจองหนังสือในขณะนี้</div>`;
+                return;
+            }
+
+            reservations.forEach((book, index) => {
+                if(book.status === 'ready') {
+                    // หนังสือที่ "อนุมัติแล้ว" 
+                    container.innerHTML += `
+                    <div class="bg-white rounded-3xl p-5 border-2 border-green-400 shadow-md flex flex-col md:flex-row gap-6 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-green-400"></div>
+                        <div class="w-24 h-36 bg-gray-200 rounded-xl overflow-hidden shrink-0 border border-gray-100 ml-2">
+                            <img src="${book.cover}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow flex flex-col justify-between py-1 w-full">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold mb-2">
+                                    <i class="fa-regular fa-circle-check"></i> อนุมัติแล้ว (กรุณาติดต่อรับที่เคาน์เตอร์)
+                                </div>
+                                <h3 class="font-bold text-slate-800 text-lg leading-tight mb-1">${book.title}</h3>
+                                <p class="text-xs text-gray-500">${book.author}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    // หนังสือที่ "รออนุมัติ"
+                    container.innerHTML += `
+                    <div class="bg-white rounded-3xl p-5 border border-yellow-300 shadow-sm flex flex-col md:flex-row gap-6 relative overflow-hidden opacity-70">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-400"></div>
+                        <div class="w-24 h-36 bg-gray-200 rounded-xl overflow-hidden shrink-0 border border-gray-100 ml-2">
+                            <img src="${book.cover}" class="w-full h-full object-cover grayscale">
+                        </div>
+                        <div class="flex-grow flex flex-col justify-between py-1 w-full">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-[10px] font-bold mb-2">
+                                    <i class="fa-solid fa-hourglass-half"></i> กำลังรอการตรวจสอบจากบรรณารักษ์
+                                </div>
+                                <h3 class="font-bold text-slate-800 text-lg leading-tight mb-1">${book.title}</h3>
+                                <p class="text-xs text-gray-500">${book.author}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+
+
+        function loadNotificationSettings() {
+            const defaultSettings = { email: true, sms: false, dueAlert: true };
+            const settings = JSON.parse(localStorage.getItem('libraryUserSettings')) || defaultSettings;
+            
+            document.getElementById('toggleReservationEmail').checked = settings.email;
+        }
+
+        function saveNotificationSettings() {
+            const defaultSettings = { email: true, sms: false, dueAlert: true };
+            let settings = JSON.parse(localStorage.getItem('libraryUserSettings')) || defaultSettings;
+            
+            settings.email = document.getElementById('toggleReservationEmail').checked;
+            
+            localStorage.setItem('libraryUserSettings', JSON.stringify(settings));
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../login.html';
+
+
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
+            }
+
+
+            renderNotifications();
+            updateCartBadge();
+
+
+            loadNotificationSettings();
+
+
+            renderReservations(); 
+
+
+            setInterval(renderReservations, 3000);
+        });
+    </script>
+</body>
+</html>

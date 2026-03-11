@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibManager - ตรวจสอบรายการ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f2f7; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden text-slate-800">
+
+    <aside class="w-64 bg-white flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 shrink-0">
+        
+        <div class="h-20 flex items-center px-8 border-b border-gray-50 shrink-0">
+            <a href="main.html" class="flex items-center gap-3">
+                <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                <h1 class="font-bold text-lg tracking-wide text-slate-800">LibManager</h1>
+            </a>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scroll">
+            <a href="main.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-border-all"></i></div> แผงควบคุม
+            </a>
+            <a href="#" class="flex items-center gap-3 bg-[#f3e8ff] text-purple-700 px-4 py-3 rounded-xl font-bold text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-clipboard-list"></i></div> ตรวจสอบรายการ
+            </a>
+            <a href="approvals.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-right-left"></i></div> การจอง/การคืน
+            </a>
+            <a href="messages.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors relative">
+                <div class="w-5 text-center"><i class="fa-regular fa-comment-dots"></i></div> ข้อความ
+            </a>
+            <a href="manage_books.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-book"></i></div> จัดการหนังสือ
+            </a>
+        </nav>
+
+        <div class="p-6">
+            <button onclick="logoutLibrarian()" class="w-full flex items-center justify-center gap-2 border-2 border-red-100 text-red-500 hover:bg-red-50 font-bold py-3 rounded-xl transition-colors text-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <nav class="bg-white px-8 py-4 shadow-sm flex justify-between items-center z-10 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">ตรวจสอบรายการ</h2>
+                <p class="text-xs text-gray-500">รายละเอียดข้อมูลผู้ใช้และรายการในความดูแล</p>
+            </div>
+        </nav>
+
+        <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col xl:flex-row gap-6 hide-scroll">
+            
+            <div class="flex-1 flex flex-col gap-6 min-w-0" id="userListContainer"></div>
+
+            <div class="w-full xl:w-80 flex flex-col gap-4 shrink-0">
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
+                    <p class="text-xs font-bold text-slate-800 px-2 pt-1 mb-2">ค้นหาข้อมูลผู้ใช้</p>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="searchInput" onkeyup="filterUsers()" placeholder="ระบุ ID, ชื่อ..." 
+                               class="w-full pl-9 pr-4 py-2 bg-gray-50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col" id="selectedUserProfile">
+                    <div class="h-24 bg-gradient-to-r from-[#8b31ff] to-[#6d28d9] relative">
+                        <div class="absolute -bottom-8 left-6 w-16 h-16 bg-[#e2d5f8] rounded-full border-4 border-white overflow-hidden flex items-center justify-center text-purple-400 text-2xl shadow-sm">
+                            <img id="profilePicSide" src="" class="w-full h-full object-cover hidden">
+                            <i id="profileIconSide" class="fa-solid fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-10 px-6 pb-6">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight" id="profileName">-</h3>
+                        <p class="text-xs text-gray-500 mb-1" id="profileId">ID: -</p>
+                        <p class="text-[10px] text-purple-600 font-medium bg-purple-50 inline-block px-2 py-0.5 rounded-full mb-6" id="profileMajor">University of Phayao</p>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                                <p class="text-2xl font-black text-purple-700" id="profileTotalItems">0</p>
+                                <p class="text-[10px] text-gray-500 mt-1">รายการในระบบรวม</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                                <p class="text-2xl font-black text-red-600" id="profileTotalFines">0</p>
+                                <p class="text-[10px] text-gray-500 mt-1">ค่าปรับ (บาท)</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="text-xs font-bold text-slate-800 mb-3">สถานะหนังสือในความดูแล</p>
+                            <div class="flex justify-between items-center text-[10px] font-medium mb-1">
+                                <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> เกินกำหนดส่ง</span>
+                                <span class="text-red-500" id="profileOverdueCount">0 เล่ม</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] font-medium mb-1">
+                                <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div> กำลังยืมปกติ</span>
+                                <span class="text-gray-600" id="profileActiveCount">0 เล่ม</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] font-medium">
+                                <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> กำลังจอง/รอรับ</span>
+                                <span class="text-yellow-600" id="profileReservedCount">0 เล่ม</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allSystemData = [];
+        let currentlySelectedUserId = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('isLibrarianLoggedIn') !== 'true') window.location.href = '../login.html';
+            fetchAndSyncAllUsersData();
+            setInterval(fetchAndSyncAllUsersData, 3000); // รีเฟรชทุก 3 วินาที
+        });
+
+        function logoutLibrarian() {
+            if(confirm('ต้องการออกจากระบบจัดการใช่หรือไม่?')) {
+                localStorage.removeItem('isLibrarianLoggedIn');
+                window.location.href = '../login.html';
+            }
+        }
+
+
+        function fetchAndSyncAllUsersData() {
+            let allRegisteredUsers = JSON.parse(localStorage.getItem('allLibraryUsers')) || [];
+            let activeLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            let reservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+
+            let d = new Date();
+            d.setDate(d.getDate() + simulatedDaysOffset);
+            const simDate = d;
+
+            allSystemData = [];
+
+            if (allRegisteredUsers.length === 0) {
+                renderUserList([]); updateEmptySidebar(); return;
+            }
+
+
+            allRegisteredUsers.forEach(user => {
+                let userBooks = []; 
+                let userFines = 0; 
+                let userOverdue = 0;
+                let userActive = 0; 
+                let userReserved = 0;
+
+
+                reservationsRaw.forEach(book => {
+                    let processedBook = {...book, bookType: 'reservation'};
+                    userReserved++; userBooks.push(processedBook);
+                });
+
+                activeLoansRaw.forEach(book => {
+                    let processedBook = {...book, bookType: 'loan'};
+                    if(book.borrowTimestamp) {
+                        let borrowDate = new Date(book.borrowTimestamp);
+                        let dueDate = new Date(borrowDate);
+                        dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                        processedBook.dueDateStr = dueDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+
+                        if (simDate > dueDate) {
+                            let diffTime = Math.abs(simDate - dueDate);
+                            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                            processedBook.isOverdue = true; processedBook.overdueDays = diffDays;
+                            userFines += (diffDays * 5); userOverdue++;
+                        } else {
+                            let diffTime = dueDate - simDate;
+                            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                            processedBook.isOverdue = false; processedBook.daysLeft = diffDays;
+                            userActive++;
+                        }
+                    }
+                    userBooks.push(processedBook);
+                });
+                // --------------------------------------------------------
+
+                allSystemData.push({
+                    id: user.studentID,
+                    name: user.fullname,
+                    email: user.email,
+                    pic: user.profilePic || null,
+                    major: user.major || 'University of Phayao',
+                    books: userBooks, 
+                    fines: userFines,
+                    overdueCount: userOverdue,
+                    activeCount: userActive,
+                    reservedCount: userReserved
+                });
+            });
+
+
+            if(!currentlySelectedUserId && allSystemData.length > 0) {
+                currentlySelectedUserId = allSystemData[0].id;
+            }
+            filterUsers();
+        }
+
+        function renderUserList(dataToRender) {
+            const container = document.getElementById('userListContainer'); 
+            container.innerHTML = '';
+            
+            if(dataToRender.length === 0) {
+                container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-gray-400 py-20 bg-white rounded-2xl border border-gray-100"><i class="fa-solid fa-users-slash text-4xl mb-3 text-gray-200"></i><p class="text-sm font-medium">ไม่พบข้อมูลผู้ใช้งาน</p></div>`;
+                return;
+            }
+
+            dataToRender.forEach(userData => {
+                let booksHTML = '';
+                
+                if(userData.books.length === 0) {
+                    booksHTML = `<p class="text-xs text-gray-400 text-center py-4 bg-gray-50 rounded-lg">ผู้ใช้นี้ยังไม่มีรายการจองและยืมหนังสือ</p>`;
+                } else {
+                    userData.books.forEach(book => {
+                        let statusDot = ''; let statusBadge = '';
+                        if (book.bookType === 'reservation') {
+                            if (book.status === 'pending') {
+                                statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> <span class="text-slate-700 font-bold">รอการอนุมัติ</span>`;
+                                statusBadge = `<span class="bg-yellow-50 text-yellow-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">อยู่ในคิวการจอง</span>`;
+                            } else if (book.status === 'ready') {
+                                statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> <span class="text-slate-700 font-bold">รอรับที่เคาน์เตอร์</span>`;
+                                statusBadge = `<span class="bg-green-50 text-green-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">อนุมัติแล้ว (พร้อมรับ)</span>`;
+                            }
+                        } else if (book.bookType === 'loan') {
+                            statusDot = book.isOverdue 
+                                ? `<div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> <span class="text-slate-700 font-bold">หมดวันที่ ${book.dueDateStr}</span>`
+                                : `<div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div> <span class="text-slate-700 font-bold">หมดวันที่ ${book.dueDateStr}</span>`;
+                            statusBadge = book.isOverdue
+                                ? `<span class="bg-red-600 text-white px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">เลยกำหนด ${book.overdueDays} วัน</span>`
+                                : `<span class="bg-[#e2e8f0] text-gray-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">กำลังยืม (เหลือ ${book.daysLeft} วัน)</span>`;
+                        }
+
+                        booksHTML += `
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded-lg">
+                                <div class="flex items-center gap-4 w-1/2">
+                                    <div class="w-10 h-14 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover"></div>
+                                    <div class="truncate">
+                                        <h4 class="font-bold text-slate-800 text-sm leading-tight mb-0.5 truncate">${book.title}</h4>
+                                        <p class="text-[9px] text-gray-400 truncate">${book.author}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-6 w-1/2 justify-end">
+                                    <div class="flex items-center gap-2 text-[10px]">${statusDot}</div>
+                                    <div>${statusBadge}</div>
+                                </div>
+                            </div>`;
+                    });
+                }
+
+                let isSelectedClass = (userData.id === currentlySelectedUserId) ? 'ring-2 ring-purple-400 bg-purple-50/10' : 'hover:shadow-md';
+                
+
+                let profileImgHtml = userData.pic 
+                    ? `<img src="${userData.pic}" class="w-10 h-10 rounded-full object-cover border border-gray-200">`
+                    : `<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center border border-purple-200"><i class="fa-solid fa-user"></i></div>`;
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 transition-all cursor-pointer ${isSelectedClass}" onclick="selectUser('${userData.id}')">
+                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                            <div class="flex items-center gap-3">
+                                ${profileImgHtml}
+                                <div>
+                                    <h2 class="font-bold text-slate-800 text-base">${userData.name}</h2>
+                                    <p class="text-[10px] text-gray-500 font-mono">ID: ${userData.id}</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 text-gray-500 px-3 py-1 rounded-full text-xs font-bold border border-gray-100">
+                                ${userData.books.length} รายการ
+                            </div>
+                        </div>
+                        <div class="space-y-1">${booksHTML}</div>
+                    </div>`;
+            });
+        }
+
+        function selectUser(userId) { 
+            currentlySelectedUserId = userId; 
+            filterUsers(); 
+        }
+
+        function updateProfileSidebar(userId) {
+            let userData = allSystemData.find(u => u.id === userId);
+            if(!userData) { updateEmptySidebar(); return; }
+
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('profileId').textContent = 'ID: ' + userData.id;
+            
+            const picSide = document.getElementById('profilePicSide');
+            const iconSide = document.getElementById('profileIconSide');
+
+            if(userData.pic) {
+                picSide.src = userData.pic;
+                picSide.classList.remove('hidden');
+                iconSide.classList.add('hidden');
+            } else {
+                picSide.classList.add('hidden');
+                iconSide.classList.remove('hidden');
+            }
+
+            document.getElementById('profileTotalItems').textContent = userData.books.length; 
+            document.getElementById('profileTotalFines').textContent = userData.fines;
+            document.getElementById('profileOverdueCount').textContent = `${userData.overdueCount} เล่ม`;
+            document.getElementById('profileActiveCount').textContent = `${userData.activeCount} เล่ม`;
+            document.getElementById('profileReservedCount').textContent = `${userData.reservedCount} เล่ม`;
+        }
+
+        function updateEmptySidebar() {
+            document.getElementById('profileName').textContent = 'ไม่พบข้อมูล';
+            document.getElementById('profileId').textContent = 'ID: -';
+            document.getElementById('profileTotalItems').textContent = '0';
+            document.getElementById('profileTotalFines').textContent = '0';
+            document.getElementById('profileOverdueCount').textContent = '0 เล่ม';
+            document.getElementById('profileActiveCount').textContent = '0 เล่ม';
+            document.getElementById('profileReservedCount').textContent = '0 เล่ม';
+        }
+
+        function filterUsers() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let filteredData = allSystemData;
+            
+            if(query !== '') {
+                filteredData = allSystemData.filter(u => 
+                    u.name.toLowerCase().includes(query) || 
+                    u.id.toLowerCase().includes(query) || 
+                    (u.email && u.email.toLowerCase().includes(query))
+                );
+            }
+            
+            renderUserList(filteredData);
+            
+            if(filteredData.length > 0) {
+                if(!filteredData.find(u => u.id === currentlySelectedUserId)) {
+                    currentlySelectedUserId = filteredData[0].id;
+                }
+                updateProfileSidebar(currentlySelectedUserId);
+            } else { 
+                updateEmptySidebar(); 
+            }
+        }
+    </script>
+</body>
+</html>

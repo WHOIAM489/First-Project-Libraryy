@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - ช่วยเหลือ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        /* ซ่อน Scrollbar ของการแจ้งเตือน */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col">
+
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
+                
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <header class="w-full text-center py-10 md:py-16">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-3">เราสามารถช่วยเหลือคุณได้อย่างไร?</h1>
+        <p class="text-sm md:text-base text-gray-500 font-light">ค้นหาข้อมูลเพื่อขอความช่วยเหลือเกี่ยวกับการยืมหนังสือ แหล่งข้อมูลดิจิทัล หรือบริการของห้องสมุด</p>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-6 pb-20 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">เรียกดูหัวข้อ</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+                        <i class="fa-solid fa-arrow-right text-gray-300 absolute top-6 right-6"></i>
+                        <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg mb-4">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mb-1">การยืม&การคืน</h3>
+                        <p class="text-[11px] text-gray-500 font-light mb-6">เรียนรู้เกี่ยวกับระยะเวลาการยืม วงเงิน และวิธีการคืนสินค้า</p>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> ฉันสามารถยืมหนังสือได้กี่เล่ม?</a></li>
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> ต่ออายุออนไลน์</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+                        <i class="fa-solid fa-arrow-right text-gray-300 absolute top-6 right-6"></i>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg mb-4">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mb-1">ทรัพยากรดิจิทัล</h3>
+                        <p class="text-[11px] text-gray-500 font-light mb-6">เข้าถึงอีบุ๊ก วารสาร และฐานข้อมูลจากภายนอกมหาวิทยาลัย</p>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> คู่มือการตั้งค่า VPN</a></li>
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> การเข้าถึง ScienceDirect</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+                        <i class="fa-solid fa-arrow-right text-gray-300 absolute top-6 right-6"></i>
+                        <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-lg mb-4">
+                            <i class="fa-solid fa-door-open"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mb-1">สิ่งอำนวยความสะดวก&ห้องพัก</h3>
+                        <p class="text-[11px] text-gray-500 font-light mb-6">การจองห้องประชุม ห้องคอมพิวเตอร์ และโซนเงียบสงบ</p>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> กฎการจองห้องพัก</a></li>
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> เวลาทำการของพื้นที่ทำงานร่วมกัน</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+                        <i class="fa-solid fa-arrow-right text-gray-300 absolute top-6 right-6"></i>
+                        <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-lg mb-4">
+                            <i class="fa-regular fa-circle-user"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mb-1">บัญชี&ค่าปรับ</h3>
+                        <p class="text-[11px] text-gray-500 font-light mb-6">จัดการบัญชีห้องสมุด การชำระเงิน และสิ่งของที่สูญหาย</p>
+                        <ul class="space-y-2">
+                            <li><a href="fines.html" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> วิธีชำระค่าปรับออนไลน์?</a></li>
+                            <li><a href="#" class="text-xs text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px]"></i> แจ้งบัตรหาย</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <h2 class="text-xl font-bold text-slate-800 mb-4 mt-8">คำถามที่พบบ่อย</h2>
+                <div class="space-y-3">
+                    <div class="w-full h-12 bg-white rounded-xl shadow-sm border border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors flex items-center px-4">
+                        </div>
+                    <div class="w-full h-12 bg-white rounded-xl shadow-sm border border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors flex items-center px-4">
+                        </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-slate-800 text-lg mb-6">ยังต้องการความช่วยเหลืออยู่ใช่ไหม?</h3>
+                    
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-light">เบอร์ติดต่อ</p>
+                                <p class="text-sm font-bold text-slate-800">081-547-7123</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                <i class="fa-regular fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-light">อีเมลติดต่อ</p>
+                                <p class="text-sm font-bold text-slate-800">lib_support@up.ac.th</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-light">สถานที่ติดต่อ</p>
+                                <p class="text-sm font-bold text-slate-800 leading-tight">Learning Innovation Center<br><span class="font-medium text-xs text-gray-500">University of Phayao</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-6">
+                        <p class="text-[10px] text-gray-400 font-light mb-3">สถานะให้บริการ</p>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span class="text-xs font-medium text-slate-700">ระบบห้องสมุดออนไลน์</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span class="text-xs font-medium text-slate-700">มีบรรณารักษ์พร้อมให้บริการ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') window.location.href = '../login.html';
+
+
+            const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if (storedUser) {
+                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+                if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
+            }
+
+
+            renderNotifications();
+            updateCartBadge();
+        });
+    </script>
+</body>
+</html>

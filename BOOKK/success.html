@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - การจองสำเร็จ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col">
+
+    <nav class="bg-white px-6 py-4 shadow-sm sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 bg-white p-1 pr-4 rounded-xl">
+                <img src="https://www.up.ac.th/img/logo.jpg" alt="Logo" class="w-8 h-8 object-contain">
+                <span class="font-bold text-slate-800 text-sm">UP Library</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-12 flex flex-col items-center">
+        
+        <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        
+        <h1 class="text-2xl font-bold text-slate-800 mb-2">การจองสำเร็จ</h1>
+        <p class="text-sm text-gray-500 mb-8 font-light text-center">หนังสือของคุณได้รับการจองเรียบร้อยแล้วและพร้อมให้มารับได้</p>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 w-full max-w-lg overflow-hidden relative mb-6">
+            <div class="p-6 flex items-start gap-4" id="receiptBookInfo">
+                <p class="text-gray-400 text-center w-full">กำลังโหลดข้อมูล...</p>
+            </div>
+            
+            <div class="relative flex items-center px-4">
+                <div class="w-4 h-4 bg-[#f8f9fc] rounded-full absolute -left-2 shadow-inner"></div>
+                <div class="flex-grow border-t-2 border-dashed border-gray-200"></div>
+                <div class="w-4 h-4 bg-[#f8f9fc] rounded-full absolute -right-2 shadow-inner"></div>
+            </div>
+
+            <div class="p-4 flex items-center justify-center gap-3 text-purple-600 bg-purple-50/30">
+                <i class="fa-solid fa-barcode text-xl"></i>
+                <span class="text-sm font-bold">สแกนที่หน้าเคาน์เตอร์</span>
+            </div>
+        </div>
+
+        <div class="bg-[#faf5ff] border border-purple-100 rounded-xl p-5 w-full max-w-lg mb-10 flex gap-3 text-purple-800 shadow-sm">
+            <i class="fa-solid fa-circle-info mt-0.5"></i>
+            <div>
+                <h4 class="font-bold text-sm mb-1">สถานที่รับสมุด</h4>
+                <p class="text-xs font-light leading-relaxed">กรุณามารับที่หอสมุดกลาง กรุณามารับที่หอสมุดกลาง ชั้น 2 ภายในทำการ 8.00-16.00 ภายในวันที่จอง<br>ถ้าภายในเวลาที่จองไม่ว่างต้องยกเลิกแล้วกดยืมใหม่</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg mb-6">
+            <a href="../user/main.html" class="flex-1 bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl text-center shadow-md transition-all">
+                กลับหน้าหลัก
+            </a>
+            <a href="../user/reservations.html" class="flex-1 bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl text-center shadow-md transition-all">
+                ดูสถานะการจอง
+            </a>
+            <button onclick="cancelReservation()" class="flex-1 bg-[#ee1d23] hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-center shadow-md transition-all">
+                ยกเลิกการจอง
+            </button>
+        </div>
+
+        <button class="text-gray-400 hover:text-gray-600 text-xs flex items-center gap-2 font-medium transition-colors">
+            <i class="fa-solid fa-download"></i> บันทึกข้อมูล
+        </button>
+
+    </main>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            
+            if(reservations.length > 0) {
+                const latestBook = reservations[reservations.length - 1]; 
+                
+                document.getElementById('receiptBookInfo').innerHTML = `
+                    <div class="w-16 h-24 bg-gray-200 rounded overflow-hidden shrink-0 shadow-sm border border-gray-100">
+                        <img src="${latestBook.cover}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-grow pt-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-purple-100 text-purple-700 text-[9px] font-bold px-1.5 py-0.5 rounded">BOOK</span>
+                            <span class="text-[10px] text-orange-400 font-bold"><i class="fa-solid fa-star"></i> ${latestBook.rating || '4.8'}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base leading-tight mb-1">${latestBook.title}</h3>
+                        <p class="text-xs text-gray-500 mb-2">by ${latestBook.author}</p>
+                        <p class="text-[10px] text-gray-400">ID: ${latestBook.callNumber}</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('receiptBookInfo').innerHTML = `<p class="text-gray-400 text-center w-full">ไม่พบข้อมูลการจองล่าสุด</p>`;
+            }
+        });
+
+        function cancelReservation() {
+            if(confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการจองครั้งล่าสุด?')) {
+                
+                let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+                let loanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
+
+                if(reservations.length > 0) {
+                    let canceledBook = reservations.pop(); // เอาตัวล่าสุดออก
+
+
+                    canceledBook.cancelDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    canceledBook.status = "Cancelled";
+                    loanHistory.push(canceledBook);
+                    
+
+                    localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+                    localStorage.setItem('loanHistory', JSON.stringify(loanHistory));
+                }
+                
+                alert('ยกเลิกการจองเรียบร้อยแล้ว หนังสือถูกบันทึกลงประวัติ');
+                window.location.href = '../user/main.html';
+            }
+        }
+    </script>
+</body>
+</html>

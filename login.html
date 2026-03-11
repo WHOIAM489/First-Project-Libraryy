@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ UP Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .header-gradient {
+            background: linear-gradient(90deg, #4b5563 0%, #6d5b8e 100%);
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full relative flex flex-col items-center justify-center overflow-hidden">
+
+    <div class="absolute inset-0 z-0">
+        <img src="https://www.up.ac.th/img/view/university-of-phayao2.jpg" alt="Background Image"
+            class="object-cover w-full h-full">
+        <div class="absolute inset-0 bg-black/20"></div>
+    </div>
+
+    <div class="absolute top-6 left-6 z-20 flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl shadow-sm">
+        <img src="pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+        <div class="text-slate-800 leading-tight">
+            <h1 class="font-bold text-sm">UP Library</h1>
+        </div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-[450px] mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+        <div class="header-gradient p-10 text-white h-40 flex flex-col justify-center">
+            <h1 class="text-2xl font-bold mb-1">ยินดีต้อนรับ</h1>
+            <p class="text-sm text-gray-200 font-light">ลงชื่อเข้าเพื่อเข้าบัญชีห้องสมุด</p>
+        </div>
+
+        <div class="p-8 pb-10">
+            <form id="loginForm" class="space-y-6">
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-800">บัตรนักศึกษา / อีเมล</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-id-card text-gray-400 text-lg"></i>
+                        </div>
+                        <input type="text" id="loginEmail" required placeholder="กรอกรหัสนิสิต หรือ อีเมล"
+                            class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-700 transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-bold text-slate-800">รหัสผ่าน</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-lock text-gray-400 text-lg"></i>
+                        </div>
+
+                        <input type="password" id="loginPassword" placeholder="••••••••" required
+                            class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-gray-700 transition-all">
+
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer text-gray-400 hover:text-purple-600"
+                            onclick="toggleLoginPassword()">
+                            <i id="loginEyeIcon" class="fa-regular fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-[#4a0080] hover:bg-purple-900 text-white font-bold py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+                    เข้าสู่ระบบ <i class="fa-solid fa-arrow-right text-sm"> </i>
+                </button>
+
+            </form>
+
+            <div class="mt-6 text-center flex flex-col gap-3">
+                <p class="text-xs text-gray-400">
+                    <a href="register.html" class="font-bold text-purple-700 hover:underline">สร้างบัญชีใหม่</a>
+                </p>
+                <div class="w-full border-t border-gray-100 pt-3 mt-1">
+                    <a href="librarian_login.html" class="text-xs font-medium text-slate-500 hover:text-slate-800 hover:underline flex items-center justify-center gap-1.5 transition-colors">
+                        <i class="fa-solid fa-user-tie"></i> สำหรับเจ้าหน้าที่บรรณารักษ์
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-8 relative z-10 flex flex-col items-center gap-3">
+        <div class="py-2 text-center shrink-0">
+            <p class="text-[10px] text-white/80">© 202X UP Library. <a href="#" class="hover:underline">Terms & Conditions</a></p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleLoginPassword() {
+            const passwordInput = document.getElementById('loginPassword');
+            const eyeIcon = document.getElementById('loginEyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const inputEmail = document.getElementById('loginEmail').value;
+            const inputPassword = document.getElementById('loginPassword').value;
+
+
+            const allUsers = JSON.parse(localStorage.getItem('allLibraryUsers')) || [];
+
+            const matchedUser = allUsers.find(user => 
+                (user.studentID === inputEmail || user.email === inputEmail) && user.password === inputPassword
+            );
+
+            if (matchedUser) {
+                localStorage.setItem('libraryUser', JSON.stringify(matchedUser));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                alert(`เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ ${matchedUser.fullname}`);
+                window.location.href = 'user/main.html';
+            } else {
+                alert('รหัสนิสิต/อีเมล หรือ รหัสผ่านไม่ถูกต้อง หรือยังไม่ได้ลงทะเบียน!');
+            }
+        });
+    </script>
+</body>
+
+</html>

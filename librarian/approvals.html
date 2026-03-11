@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibManager - การจองและการคืน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f2f7; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* สไตล์สำหรับ Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: -300px; /* ซ่อนไว้นอกจอก่อน */
+            background: white;
+            color: #333;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 14px;
+            font-weight: 600;
+            border-left: 4px solid;
+        }
+        .toast.show {
+            right: 20px;
+        }
+        .toast-success { border-color: #22c55e; }
+        .toast-error { border-color: #ef4444; }
+        .toast-success i { color: #22c55e; }
+        .toast-error i { color: #ef4444; }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden text-slate-800 relative">
+
+    <div id="toastMessage" class="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toastText">แจ้งเตือน</span>
+    </div>
+
+    <aside class="w-64 bg-white flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 shrink-0">
+        
+        <div class="h-20 flex items-center px-8 border-b border-gray-50 shrink-0">
+            <a href="main.html" class="flex items-center gap-3">
+                <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                <h1 class="font-bold text-lg tracking-wide text-slate-800">LibManager</h1>
+            </a>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scroll">
+            <a href="main.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-border-all"></i></div> แผงควบคุม
+            </a>
+            <a href="check_requests.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-clipboard-list"></i></div> ตรวจสอบรายการ
+            </a>
+            <a href="#" class="flex items-center gap-3 bg-[#f3e8ff] text-purple-700 px-4 py-3 rounded-xl font-bold text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-right-left"></i></div> การจอง/การคืน
+            </a>
+            <a href="messages.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors relative">
+                <div class="w-5 text-center"><i class="fa-regular fa-comment-dots"></i></div> ข้อความ
+            </a>
+            <a href="manage_books.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-book"></i></div> จัดการหนังสือ
+            </a>
+        </nav>
+        <div class="p-6">
+            <button onclick="logoutLibrarian()" class="w-full flex items-center justify-center gap-2 border-2 border-red-100 text-red-500 hover:bg-red-50 font-bold py-3 rounded-xl transition-colors text-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <nav class="bg-white px-8 py-4 shadow-sm flex justify-between items-center z-10 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">การจอง/การคืน</h2>
+                <p class="text-xs text-gray-500">อนุมัติคำขอการจองหนังสือและการคืนหนังสือเข้าสู่ระบบ</p>
+            </div>
+        </nav>
+
+        <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col xl:flex-row gap-8 hide-scroll">
+            
+            <div class="flex-1 flex flex-col min-w-0 border-r-0 xl:border-r border-gray-200 xl:pr-8">
+                <h3 class="font-medium text-gray-500 text-sm mb-4 text-center">การอนุมัติการยืม (คิวจอง)</h3>
+                <div id="borrowApprovalsContainer" class="space-y-6"></div>
+            </div>
+
+            <div class="flex-1 flex flex-col min-w-0">
+                <h3 class="font-medium text-gray-500 text-sm mb-4 text-center">การอนุมัติการคืน (รอตรวจสอบหน้าเคาน์เตอร์)</h3>
+                <div id="returnApprovalsContainer" class="space-y-6"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastMessage');
+            const toastText = document.getElementById('toastText');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastText.textContent = message;
+            
+            if(type === 'success') {
+                toast.className = 'toast toast-success show';
+                toastIcon.className = 'fa-solid fa-circle-check text-xl';
+            } else {
+                toast.className = 'toast toast-error show';
+                toastIcon.className = 'fa-solid fa-circle-xmark text-xl';
+            }
+
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('isLibrarianLoggedIn') !== 'true') window.location.href = '../login.html';
+            fetchApprovalData();
+            setInterval(fetchApprovalData, 3000);
+        });
+
+        function logoutLibrarian() {
+            if(confirm('ต้องการออกจากระบบจัดการใช่หรือไม่?')) {
+                localStorage.removeItem('isLibrarianLoggedIn');
+                window.location.href = '../login.html';
+            }
+        }
+
+
+        function calculateUserFines() {
+            let total = 0;
+            const unpaidFines = JSON.parse(localStorage.getItem('unpaidFines')) || [];
+            const activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const offset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            
+            const now = new Date();
+            now.setDate(now.getDate() + offset);
+            now.setHours(0,0,0,0);
+
+            unpaidFines.forEach(f => total += parseFloat(f.fineAmount || 0));
+
+            const checkOverdue = (book) => {
+                let borrowTs = book.borrowTimestamp || Date.now();
+                let dueDate = new Date(borrowTs);
+                dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                dueDate.setHours(0,0,0,0);
+
+                if (book.lockedFineAmount) {
+                    total += parseFloat(book.lockedFineAmount);
+                } else if (now > dueDate) {
+                    let diffDays = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
+                    total += (diffDays * 5);
+                }
+            };
+
+            activeLoans.forEach(checkOverdue);
+            reservations.forEach(r => { if(r.status === 'ready') checkOverdue(r); });
+
+            let user = JSON.parse(localStorage.getItem('libraryUser'));
+            if(user) {
+                user.fines = total;
+                localStorage.setItem('libraryUser', JSON.stringify(user));
+            }
+
+            return total;
+        }
+
+        function fetchApprovalData() {
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            let user = JSON.parse(localStorage.getItem('libraryUser'));
+            let userName = user ? user.fullname : 'ผู้ใช้ทั่วไป';
+
+            const totalFines = calculateUserFines();
+            
+            const fineBadgeHTML = totalFines > 0 
+                ? `<div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between shadow-sm">
+                    <span class="text-red-700 text-[11px] font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ยอดค่าปรับค้างชำระทั้งหมด</span>
+                    <span class="text-red-700 font-bold">฿${totalFines.toFixed(2)}</span>
+                   </div>`
+                : `<div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between shadow-sm">
+                    <span class="text-green-700 text-[11px] font-bold"><i class="fa-solid fa-check-circle mr-1"></i> ไม่มีค่าปรับค้างชำระ</span>
+                    <span class="text-green-700 font-bold">฿0.00</span>
+                   </div>`;
+
+
+            const borrowContainer = document.getElementById('borrowApprovalsContainer');
+            let pendingBorrows = reservations.filter(r => r.status === 'pending');
+            
+            if (pendingBorrows.length === 0) {
+                borrowContainer.innerHTML = `
+                    <div class="h-64 flex flex-col items-center justify-center text-gray-400 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 text-gray-200"></i>
+                        <p class="text-sm font-medium">ไม่มีรายการรออนุมัติยืม</p>
+                    </div>`;
+            } else {
+                let bookListHTML = '';
+                pendingBorrows.forEach(book => {
+                    bookListHTML += `
+                        <div class="flex gap-4 items-start py-3 border-b border-gray-50 last:border-0">
+                            <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover"></div>
+                            <div class="flex-grow py-0.5">
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight mb-1">${book.title}</h4>
+                                <div class="flex items-center gap-1.5 text-[10px] text-yellow-600 font-bold"><i class="fa-solid fa-hourglass-half"></i> รอการอนุมัติ (คิวจอง)</div>
+                            </div>
+                        </div>`;
+                });
+                borrowContainer.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                        <div class="flex justify-between items-center mb-3 border-b border-gray-100 pb-2"><h3 class="font-bold text-slate-600 text-xs">รายการขอจองหนังสือ</h3><h2 class="font-bold text-slate-800 text-base">ชื่อ ${userName}</h2></div>
+                        ${fineBadgeHTML}
+                        <div class="mb-4">${bookListHTML}</div>
+                        <div class="flex gap-3 mt-4">
+                            <button onclick="approveBorrow()" class="flex-1 bg-[#32CD32] hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">อนุมัติให้รับ ${pendingBorrows.length} เล่ม</button>
+                            <button onclick="rejectBorrow()" class="flex-1 bg-[#ee1d23] hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">ไม่อนุมัติ</button>
+                        </div>
+                    </div>`;
+            }
+
+
+            const returnContainer = document.getElementById('returnApprovalsContainer');
+            let pendingReturns = activeLoans.filter(b => b.returnStatus === 'pending');
+            let pendingResReturns = reservations.filter(r => r.returnStatus === 'pending'); 
+            let allPendingReturns = [...pendingReturns, ...pendingResReturns];
+
+            if (allPendingReturns.length === 0) {
+                returnContainer.innerHTML = `
+                    <div class="h-64 flex flex-col items-center justify-center text-gray-400 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                        <i class="fa-solid fa-clipboard-check text-4xl mb-3 text-gray-200"></i>
+                        <p class="text-sm font-medium">ไม่มีรายการรอตรวจสอบการคืน</p>
+                    </div>`;
+            } else {
+                let bookListHTML = '';
+                allPendingReturns.forEach(book => {
+                    let itemFine = book.lockedFineAmount || 0;
+                    let fineInfo = itemFine > 0 ? `<span class="text-red-500 font-bold">(ค่าปรับ ${itemFine} บ.)</span>` : '';
+                    
+                    bookListHTML += `
+                        <div class="flex gap-4 items-start py-3 border-b border-gray-50 last:border-0">
+                            <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover"></div>
+                            <div class="flex-grow py-0.5">
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight mb-1">${book.title}</h4>
+                                <span class="text-yellow-500 font-bold text-[10px] flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> รอตรวจสภาพ ${fineInfo}</span>
+                            </div>
+                        </div>`;
+                });
+
+                returnContainer.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                        <div class="flex justify-between items-center mb-3 border-b border-gray-100 pb-2"><h3 class="font-bold text-slate-600 text-xs">รายการตรวจสอบเพื่อรับคืน</h3><h2 class="font-bold text-slate-800 text-base">ชื่อ ${userName}</h2></div>
+                        ${fineBadgeHTML}
+                        <div class="mb-4">${bookListHTML}</div>
+                        <div class="flex mt-4">
+                            <button onclick="approveReturn()" class="w-full bg-[#32CD32] hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition-all">
+                                ตรวจสอบสภาพแล้ว อนุมัติรับคืน ${allPendingReturns.length} เล่ม
+                            </button>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function approveBorrow() {
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            let pendingBooks = reservations.filter(r => r.status === 'pending');
+
+            if(pendingBooks.length > 0) {
+                reservations.forEach(book => {
+                    if (book.status === 'pending') {
+                        book.status = 'ready'; 
+                        notifs.push({ id: Date.now() + Math.random(), title: 'อนุมัติการจองแล้ว!', message: `หนังสือ "${book.title}" พร้อมให้คุณมารับที่เคาน์เตอร์แล้ว!`, icon: 'fa-check', color: 'green' });
+                    }
+                });
+                localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+                localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+                
+                showToast('อนุมัติการจองสำเร็จแล้ว!', 'success');
+                fetchApprovalData();
+            }
+        }
+
+        function rejectBorrow() {
+            if(!confirm('ยืนยันที่จะปฏิเสธการขอจอง?')) return;
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let history = JSON.parse(localStorage.getItem('loanHistory')) || [];
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+
+            let pendingBooks = reservations.filter(r => r.status === 'pending');
+            let otherReservations = reservations.filter(r => r.status !== 'pending');
+
+            if(pendingBooks.length > 0) {
+                pendingBooks.forEach(book => {
+                    book.status = 'Cancelled'; book.cancelDate = new Date().toLocaleDateString('en-US'); history.push(book);
+                    notifs.push({ id: Date.now(), title: 'คำขอถูกปฏิเสธ', message: `คำขอจองหนังสือ "${book.title}" ถูกบรรณารักษ์ปฏิเสธ`, icon: 'fa-ban', color: 'red' });
+                });
+                localStorage.setItem('libraryReservations', JSON.stringify(otherReservations));
+                localStorage.setItem('loanHistory', JSON.stringify(history));
+                localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+                
+                showToast('ปฏิเสธการจองเรียบร้อยแล้ว', 'error');
+                fetchApprovalData();
+            }
+        }
+
+        function approveReturn() {
+            let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let history = JSON.parse(localStorage.getItem('loanHistory')) || [];
+            let unpaidFines = JSON.parse(localStorage.getItem('unpaidFines')) || []; 
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            let user = JSON.parse(localStorage.getItem('libraryUser'));
+
+            let booksToReturn = activeLoans.filter(b => b.returnStatus === 'pending');
+            let keptActive = activeLoans.filter(b => b.returnStatus !== 'pending');
+            let resToReturn = reservations.filter(r => r.returnStatus === 'pending');
+            let keptRes = reservations.filter(r => r.returnStatus !== 'pending');
+
+            let totalReturned = booksToReturn.length + resToReturn.length;
+
+            if(totalReturned > 0) {
+                [...booksToReturn, ...resToReturn].forEach(book => {
+                    let fineToPay = book.lockedFineAmount || 0;
+                    if (fineToPay > 0) {
+                        unpaidFines.push({
+                            id: 'unp_' + Date.now() + Math.random(),
+                            title: book.title, cover: book.cover, fineAmount: fineToPay,
+                            dueDateStr: "คืนแล้ว (ค้างจ่าย)"
+                        });
+                    }
+                    book.status = 'Returned'; history.push(book);
+                });
+
+                if(user) {
+                    user.borrowedCount = Math.max(0, (user.borrowedCount || 0) - totalReturned);
+                    user.historyCount = (user.historyCount || 0) + totalReturned;
+                    localStorage.setItem('libraryUser', JSON.stringify(user));
+                }
+
+                localStorage.setItem('activeLoans', JSON.stringify(keptActive));
+                localStorage.setItem('libraryReservations', JSON.stringify(keptRes));
+                localStorage.setItem('loanHistory', JSON.stringify(history));
+                localStorage.setItem('unpaidFines', JSON.stringify(unpaidFines));
+                localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+                
+                showToast(`อนุมัติการรับคืนเรียบร้อย (${totalReturned} เล่ม)`, 'success');
+                fetchApprovalData();
+            }
+        }
+    </script>
+</body>
+</html>

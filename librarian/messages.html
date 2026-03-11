@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibManager - ข้อความและการแจ้งเตือน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f2f7; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden text-slate-800">
+
+    <aside class="w-64 bg-white flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 shrink-0">
+        
+        <div class="h-20 flex items-center px-8 border-b border-gray-50 shrink-0">
+            <a href="main.html" class="flex items-center gap-3">
+                <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                <h1 class="font-bold text-lg tracking-wide text-slate-800">LibManager</h1>
+            </a>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scroll">
+            <a href="main.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-border-all"></i></div> แผงควบคุม
+            </a>
+            <a href="check_requests.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-clipboard-list"></i></div> ตรวจสอบรายการ
+            </a>
+            <a href="approvals.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-right-left"></i></div> การจอง/การคืน
+            </a>
+            <a href="#" class="flex items-center gap-3 bg-[#f3e8ff] text-purple-700 px-4 py-3 rounded-xl font-bold text-sm transition-colors relative">
+                <div class="w-5 text-center"><i class="fa-regular fa-comment-dots"></i></div> ข้อความ
+                <span id="slipBadgeCount" class="absolute right-4 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+            </a>
+            <a href="manage_books.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-book"></i></div> จัดการหนังสือ
+            </a>
+        </nav>
+
+        <div class="p-6">
+            <button onclick="logoutLibrarian()" class="w-full flex items-center justify-center gap-2 border-2 border-red-100 text-red-500 hover:bg-red-50 font-bold py-3 rounded-xl transition-colors text-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <nav class="bg-white px-8 py-4 shadow-sm flex justify-between items-center z-10 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">ข้อความ (ตรวจสอบการชำระเงิน)</h2>
+                <p class="text-xs text-gray-500">ตรวจสอบและยืนยันสลิปการโอนเงินค่าปรับจากนักศึกษา</p>
+            </div>
+        </nav>
+
+        <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col xl:flex-row gap-6 hide-scroll">
+            
+            <div class="flex-1 flex flex-col gap-4 min-w-0" id="slipListContainer"></div>
+
+            <div class="w-full xl:w-80 flex flex-col gap-4 shrink-0">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-2">
+                    <p class="text-xs font-bold text-slate-800 px-2 pt-1 mb-2">ข้อมูลผู้ใช้</p>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="searchInput" placeholder="search by ID, Name or Email..." 
+                               class="w-full pl-9 pr-4 py-2 bg-gray-50 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-200">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col" id="selectedUserProfile">
+                    <div class="h-24 bg-gradient-to-r from-[#8b31ff] to-[#6d28d9] relative">
+                        <div class="absolute -bottom-8 left-6 w-16 h-16 bg-[#e2d5f8] rounded-full border-4 border-white overflow-hidden flex items-center justify-center text-purple-400 text-2xl shadow-sm">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-10 px-6 pb-6">
+                        <h3 class="font-bold text-slate-800 text-lg leading-tight" id="profileName">-</h3>
+                        <p class="text-xs text-gray-500 mb-6" id="profileId">ID: -</p>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                                <p class="text-2xl font-black text-purple-700" id="profileTotalLoans">0</p>
+                                <p class="text-[10px] text-gray-500 mt-1">จำนวนรายการยืม</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                                <p class="text-2xl font-black text-red-600" id="profileTotalFines">-</p>
+                                <p class="text-[10px] text-gray-500 mt-1">ค่าปรับที่ต้องชำระ</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <p class="text-xs font-bold text-slate-800 mb-3">หนังสือที่กำลังอยู่ตอนนี้</p>
+                            <div class="flex justify-between items-center text-[10px] font-medium mb-1">
+                                <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> ต้องคืน</span>
+                                <span class="text-red-500" id="profileOverdueCount">เลยกำหนด 0 เล่ม</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[10px] font-medium">
+                                <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> กำลังยืม</span>
+                                <span class="text-gray-500" id="profileActiveCount">0 เล่ม</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="slipViewerModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="slipModalContent">
+            
+            <div class="flex justify-between items-center p-4 border-b border-gray-100">
+                <h3 class="font-bold text-slate-800 text-lg">หลักฐานการชำระเงิน</h3>
+                <button onclick="closeSlipModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 bg-gray-50 flex justify-center">
+                <img id="slipModalImage" src="" alt="Slip Image" class="max-h-[50vh] object-contain rounded-xl shadow-sm border border-gray-200 bg-white">
+            </div>
+
+            <div class="p-4 border-t border-gray-100 flex gap-3 bg-white">
+                <a id="downloadSlipBtn" href="#" download="slip_student.png" class="flex-1 bg-white border-2 border-gray-200 text-slate-700 hover:bg-gray-50 font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm">
+                    <i class="fa-solid fa-download"></i> ดาวน์โหลดภาพ
+                </a>
+                <button id="rejectSlipBtn" class="flex-1 bg-[#ee1d23] hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transition-colors text-sm">
+                    <i class="fa-solid fa-ban"></i> สลิปไม่ถูกต้อง
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let submittedSlips = [];
+        let activeLoansRaw = [];
+        let libraryUser = {};
+        let allSystemData = [];
+        let currentlySelectedUserId = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('isLibrarianLoggedIn') !== 'true') {
+                window.location.href = '../login.html';
+            }
+            loadAndRenderData();
+            setInterval(loadAndRenderData, 3000);
+        });
+
+        function logoutLibrarian() {
+            if(confirm('ต้องการออกจากระบบจัดการใช่หรือไม่?')) {
+                localStorage.removeItem('isLibrarianLoggedIn');
+                window.location.href = '../login.html';
+            }
+        }
+
+        function loadAndRenderData() {
+            submittedSlips = JSON.parse(localStorage.getItem('pendingSlips')) || [];
+            activeLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            
+
+            let allRegisteredUsers = JSON.parse(localStorage.getItem('allLibraryUsers')) || [];
+            allSystemData = allRegisteredUsers;
+
+            updateBadge();
+            renderSlipList();
+
+            if(!currentlySelectedUserId && allSystemData.length > 0) {
+                currentlySelectedUserId = allSystemData[0].studentID;
+            }
+            if(currentlySelectedUserId) displayUserInfo(allSystemData.find(u => u.studentID === currentlySelectedUserId));
+        }
+
+        function updateBadge() {
+            const badge = document.getElementById('slipBadgeCount');
+            if (submittedSlips.length > 0) {
+                badge.textContent = submittedSlips.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderSlipList() {
+            const container = document.getElementById('slipListContainer');
+            container.innerHTML = '';
+
+            if (submittedSlips.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400 py-20 bg-white rounded-2xl border border-gray-100">
+                        <i class="fa-solid fa-file-invoice-dollar text-4xl mb-3 text-gray-200"></i>
+                        <p class="text-sm font-medium">ไม่มีรายการรอตรวจสอบสลิป</p>
+                    </div>`;
+                return;
+            }
+
+            submittedSlips.forEach((slip, index) => {
+                let userName = slip.userName || 'Student User';
+                
+                let viewSlipBtn = '';
+                if(slip.slipImage) {
+                    viewSlipBtn = `
+                        <button onclick="openSlipModal('${slip.id}', ${index})" class="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold px-3 py-2.5 rounded-lg shadow-sm transition-colors whitespace-nowrap flex items-center gap-1.5">
+                            <i class="fa-regular fa-image"></i> ดูสลิป
+                        </button>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative group hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-slate-600 text-xs">รายการชำระค่าปรับ</h3>
+                            <h2 class="font-bold text-slate-800 text-base">ชื่อ ${userName}</h2>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center gap-4 w-full md:w-1/2">
+                                <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100">
+                                    <img src="${slip.bookCover}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="truncate">
+                                    <h4 class="font-bold text-slate-800 text-sm leading-tight mb-0.5 truncate">${slip.bookTitle}</h4>
+                                    <p class="text-[10px] text-red-500 font-bold">ยอดค่าปรับ: ${parseFloat(slip.fineAmount).toFixed(2)} บาท</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 text-[10px] w-full md:w-1/4">
+                                <div class="w-2 h-2 rounded-full bg-yellow-400"></div> 
+                                <span class="text-slate-700 font-bold">ส่งสลิปแล้ว (รอตรวจสอบ)</span>
+                            </div>
+
+                            <div class="w-full md:w-1/4 flex justify-end gap-2">
+                                ${viewSlipBtn}
+                                <button onclick="verifySlip('${slip.id}', ${index})" class="bg-[#32CD32] hover:bg-green-700 text-white text-[11px] font-bold px-4 py-2.5 rounded-lg shadow-sm transition-colors whitespace-nowrap">
+                                    ยืนยันสลิป
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        const slipModal = document.getElementById('slipViewerModal');
+        const slipModalContent = document.getElementById('slipModalContent');
+
+        function openSlipModal(slipId, index) {
+            const slip = submittedSlips.find(s => s.id === slipId);
+            if(slip && slip.slipImage) {
+                document.getElementById('slipModalImage').src = slip.slipImage;
+                
+                const downloadBtn = document.getElementById('downloadSlipBtn');
+                downloadBtn.href = slip.slipImage;
+                downloadBtn.download = `slip_${slip.userId || 'student'}_${Date.now()}.png`;
+
+
+                document.getElementById('rejectSlipBtn').onclick = function() {
+                    rejectSlip(slip, index);
+                };
+
+                slipModal.classList.remove('hidden');
+                setTimeout(() => {
+                    slipModal.classList.remove('opacity-0');
+                    slipModalContent.classList.remove('scale-95');
+                    slipModalContent.classList.add('scale-100');
+                }, 10);
+            }
+        }
+
+        function closeSlipModal() {
+            slipModal.classList.add('opacity-0');
+            slipModalContent.classList.remove('scale-100');
+            slipModalContent.classList.add('scale-95');
+            setTimeout(() => {
+                slipModal.classList.add('hidden');
+            }, 300);
+        }
+
+        function verifySlip(slipId, index) {
+            if(confirm("ตรวจสอบสลิปโอนเงินถูกต้องเรียบร้อยแล้ว และต้องการยืนยันใช่หรือไม่?")) {
+                submittedSlips.splice(index, 1);
+                localStorage.setItem('pendingSlips', JSON.stringify(submittedSlips));
+
+
+                let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+                notifs.push({
+                    id: Date.now(), 
+                    title: 'ตรวจสอบสลิปสำเร็จ', 
+                    message: `บรรณารักษ์ได้ตรวจสอบและยืนยันการชำระค่าปรับของคุณเรียบร้อยแล้ว`, 
+                    icon: 'fa-check', 
+                    color: 'green'
+                });
+                localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+
+
+                let currentSessionUser = JSON.parse(localStorage.getItem('libraryUser'));
+                if (currentSessionUser) {
+                    currentSessionUser.fines = 0;
+                    localStorage.setItem('libraryUser', JSON.stringify(currentSessionUser));
+                }
+
+                alert("ยืนยันตรวจสอบสลิปสำเร็จ!");
+                loadAndRenderData(); 
+            }
+        }
+
+
+        function rejectSlip(slip, index) {
+            if(confirm("ยืนยันการปฏิเสธสลิปการชำระเงินนี้หรือไม่? ระบบจะแจ้งเตือนให้นักศึกษาไปติดต่อเคาน์เตอร์")) {
+                let userEmail = slip.userId + "@up.ac.th";
+                alert(`ระบบได้จำลองการส่งอีเมลแจ้งเตือนการปฏิเสธสลิปไปยัง: ${userEmail}`);
+
+
+                submittedSlips.splice(index, 1);
+                localStorage.setItem('pendingSlips', JSON.stringify(submittedSlips));
+
+                let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+                notifs.push({
+                    id: Date.now(), 
+                    title: 'สลิปไม่ถูกต้อง/ตรวจสอบไม่ผ่าน', 
+                    message: `สลิปค่าปรับของหนังสือ "${slip.bookTitle}" ไม่ถูกต้อง กรุณาติดต่อบรรณารักษ์ที่หน้าเคาน์เตอร์`, 
+                    icon: 'fa-ban', 
+                    color: 'red'
+                });
+                localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+
+                closeSlipModal();
+                loadAndRenderData();
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const foundUser = allSystemData.find(u => 
+                u.studentID.toLowerCase().includes(searchTerm) || 
+                u.fullname.toLowerCase().includes(searchTerm)
+            );
+
+            if (foundUser && searchTerm !== "") {
+                currentlySelectedUserId = foundUser.studentID;
+                displayUserInfo(foundUser);
+            } else if (searchTerm === "") {
+                if(allSystemData.length > 0) displayUserInfo(allSystemData[0]);
+            }
+        });
+
+        function displayUserInfo(user) {
+            if(!user) return;
+
+            document.getElementById('profileName').textContent = user.fullname || 'ไม่ระบุชื่อ';
+            document.getElementById('profileId').textContent = 'ID: ' + (user.studentID || '------');
+            
+
+            const userLoans = activeLoansRaw; 
+            
+            document.getElementById('profileTotalLoans').textContent = userLoans.length;
+            document.getElementById('profileTotalFines').textContent = user.fines > 0 ? user.fines + " ฿" : "-";
+
+            let overdueCount = 0;
+            let activeCount = 0;
+            let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            let simDate = new Date();
+            simDate.setDate(simDate.getDate() + simulatedDaysOffset);
+
+            let bookListHTML = `<p class="text-xs font-bold text-slate-800 mb-3 mt-4">รายการหนังสือที่ครอบครอง</p>`;
+            
+            if (userLoans.length === 0) {
+                bookListHTML += `<p class="text-[10px] text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl">ไม่มีรายการยืมขณะนี้</p>`;
+            } else {
+                userLoans.forEach(loan => {
+                    const dueDate = new Date(loan.borrowTimestamp);
+                    dueDate.setDate(dueDate.getDate() + (loan.duration || 15));
+                    const isOverdue = simDate > dueDate;
+                    
+                    if (isOverdue) overdueCount++; else activeCount++;
+
+                    bookListHTML += `
+                        <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-xl mb-2 border border-gray-100">
+                            <img src="${loan.cover || 'https://via.placeholder.com/40x60'}" class="w-8 h-11 object-cover rounded shadow-sm">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[10px] font-bold text-slate-800 truncate">${loan.title}</p>
+                                <p class="text-[9px] ${isOverdue ? 'text-red-500 font-bold' : 'text-gray-500'}">
+                                    ${isOverdue ? 'เลยกำหนดส่ง' : 'กำหนดคืน: ' + dueDate.toLocaleDateString('th-TH')}
+                                </p>
+                            </div>
+                            <div class="w-2 h-2 rounded-full ${isOverdue ? 'bg-red-500' : 'bg-green-500'} shrink-0"></div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('profileOverdueCount').textContent = `เลยกำหนด ${overdueCount} เล่ม`;
+            document.getElementById('profileActiveCount').textContent = `${activeCount} เล่ม`;
+
+            const container = document.getElementById('selectedUserProfile').querySelector('.px-6.pb-6');
+            const oldList = container.querySelector('.dynamic-book-list');
+            if(oldList) oldList.remove();
+            
+            const newListDiv = document.createElement('div');
+            newListDiv.className = 'dynamic-book-list';
+            newListDiv.innerHTML = bookListHTML;
+            container.appendChild(newListDiv);
+        }
+    </script>
+</body>
+</html>

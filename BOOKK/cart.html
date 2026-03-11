@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UP Library - รถเข็นของฉัน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { font-family: 'Kanit', sans-serif; } </style>
+</head>
+<body class="bg-[#f8f9fc] min-h-screen flex flex-col">
+
+    <nav class="bg-white px-6 py-4 shadow-sm sticky top-0 z-50 flex justify-between items-center">
+        <a href="main.html" class="text-xl text-slate-800 hover:text-purple-600 transition-colors px-2"><i class="fa-solid fa-chevron-left"></i></a>
+        <h1 class="font-bold text-lg text-slate-800">รถเข็นของฉัน</h1>
+        <div class="w-8"></div> 
+    </nav>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8">
+        
+        <p class="text-sm text-gray-500 mb-4 font-medium">รายการสำหรับการจอง</p>
+
+        <div id="cartItemsContainer" class="space-y-4">
+            </div>
+
+        <div class="mt-8 flex flex-col items-center">
+            
+            <div class="bg-blue-50 text-blue-700 text-xs px-4 py-3 rounded-lg border border-blue-100 flex gap-2 items-start max-w-2xl w-full mb-6 shadow-sm">
+                <i class="fa-solid fa-circle-info mt-0.5"></i>
+                <p>หนังสือที่จองไว้ในวันนี้จะต้องมารับภายใน 24 ชั่วโมงที่เคาน์เตอร์ห้องสมุดหลัก<br>(ชั้น 2)</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full max-w-2xl">
+                
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
+                    <span class="text-sm text-gray-500">รายการทั้งหมด</span>
+                    <span id="totalBooks" class="font-bold text-slate-800">หนังสือ 0 เล่ม</span>
+                </div>
+
+                <div class="flex justify-between items-center mb-8">
+                    <span class="text-sm text-gray-500">เวลารับหนังสือ</span>
+                    <div class="flex items-center gap-2 text-purple-700 font-bold text-sm bg-purple-50 px-4 py-2 rounded-lg border border-purple-100">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>ภายในเวลาทำการวันที่จอง</span>
+                    </div>
+                </div>
+
+                <button onclick="confirmReservation()" class="w-full bg-[#8b31ff] hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    ยืนยันการจอง <i class="fa-regular fa-circle-check"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const container = document.getElementById('cartItemsContainer');
+            const totalDisplay = document.getElementById('totalBooks');
+            
+            container.innerHTML = ''; /
+            totalDisplay.textContent = `หนังสือ ${cart.length} เล่ม`;
+
+            if(cart.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 text-center rounded-xl shadow-sm border border-gray-50 text-gray-400">ไม่มีรายการหนังสือในรถเข็น</div>`;
+                return;
+            }
+
+            cart.forEach((book, index) => {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                let returnDate = new Date(tomorrow);
+                returnDate.setDate(returnDate.getDate() + parseInt(book.duration));
+                let formattedReturnDate = returnDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'numeric', day: 'numeric' });
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-start gap-4 relative">
+                        <div class="w-20 h-28 bg-gray-200 rounded-lg overflow-hidden shrink-0 border border-gray-100">
+                            <img src="${book.cover}" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-slate-800 text-sm md:text-base leading-tight mb-1">${book.title}</h3>
+                            <p class="text-xs text-purple-600 font-medium mb-1">${book.callNumber}</p>
+                            <p class="text-xs text-gray-500">${book.author}</p>
+                            
+                            <div class="mt-3 bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-[10px] font-bold inline-block">มีอยู่</div>
+                        </div>
+
+                        <div class="flex flex-col items-end justify-between h-28 shrink-0">
+                            <button onclick="removeFromCart(${index})" class="text-gray-300 hover:text-red-500 transition-colors w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <div class="text-right">
+                                <div class="flex items-center gap-1.5 justify-end mb-1 text-sm font-bold text-slate-700">
+                                    <div class="w-2 h-2 rounded-full bg-green-500"></div> ${book.duration} วัน
+                                </div>
+                                <p class="text-[10px] text-gray-400 leading-tight">ระยะเวลากำหนด<br>วันที่ ${formattedReturnDate}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            cart.splice(index, 1); 
+            localStorage.setItem('libraryCart', JSON.stringify(cart));
+            renderCart(); 
+        }
+
+        function confirmReservation() {
+            let cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            if(cart.length === 0) {
+                alert('รถเข็นว่างเปล่า กรุณาเลือกหนังสือก่อนกดยืนยัน');
+                return;
+            }
+
+
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            
+            cart.forEach(book => {
+                book.status = 'pending'; 
+                reservations.push(book);
+            });
+            localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+
+ 
+            localStorage.removeItem('libraryCart');
+
+
+            window.location.href = 'success.html';
+        }
+
+
+        renderCart();
+    </script>
+</body>
+</html>

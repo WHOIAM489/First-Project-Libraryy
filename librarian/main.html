@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibManager - แผงควบคุม</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> 
+        body { font-family: 'Kanit', sans-serif; background-color: #f4f2f7; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden text-slate-800">
+
+    <aside class="w-64 bg-white flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 shrink-0">
+        
+        <div class="h-20 flex items-center px-8 border-b border-gray-50 shrink-0">
+            <a href="main.html" class="flex items-center gap-3">
+                <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                <h1 class="font-bold text-lg tracking-wide text-slate-800">LibManager</h1>
+            </a>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scroll">
+            <a href="#" class="flex items-center gap-3 bg-[#f3e8ff] text-purple-700 px-4 py-3 rounded-xl font-bold text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-border-all"></i></div> แผงควบคุม
+            </a>
+            <a href="check_requests.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-clipboard-list"></i></div> ตรวจสอบรายการ
+            </a>
+            <a href="approvals.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-right-left"></i></div> การจอง/การคืน
+            </a>
+            <a href="messages.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors relative">
+                <div class="w-5 text-center"><i class="fa-regular fa-comment-dots"></i></div> ข้อความ
+            </a>
+            <a href="manage_books.html" class="flex items-center gap-3 text-gray-500 hover:bg-gray-50 hover:text-slate-700 px-4 py-3 rounded-xl font-medium text-sm transition-colors">
+                <div class="w-5 text-center"><i class="fa-solid fa-book"></i></div> จัดการหนังสือ
+            </a>
+        </nav>
+
+        <div class="p-6">
+            <button onclick="logoutLibrarian()" class="w-full flex items-center justify-center gap-2 border-2 border-red-100 text-red-500 hover:bg-red-50 font-bold py-3 rounded-xl transition-colors text-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <nav class="bg-white px-8 py-4 shadow-sm flex justify-between items-center z-10 shrink-0">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">แผงควบคุม (Dashboard)</h2>
+                <p class="text-xs text-gray-500">ภาพรวมระบบห้องสมุดและการแจ้งเตือน</p>
+            </div>
+        </nav>
+
+        <div class="flex-1 overflow-y-auto p-6 lg:p-8 flex flex-col lg:flex-row gap-6 hide-scroll">
+            
+            <div class="flex-1 flex flex-col gap-6 min-w-0">
+                
+                <div class="grid grid-cols-2 gap-6 h-28">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-50 rounded-full opacity-50"></div>
+                        <p class="text-xs text-gray-500 font-medium mb-1">เช็คเอาท์แล้ว</p>
+                        <h2 class="text-3xl font-black text-slate-800 leading-none mb-1" id="statCheckedOut">0</h2>
+                        <span class="text-xs font-bold text-green-500">+12%</span>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-red-50 rounded-full opacity-50"></div>
+                        <p class="text-xs text-gray-500 font-medium mb-1">เกินกำหนด</p>
+                        <h2 class="text-3xl font-black text-red-600 leading-none mb-1" id="statOverdue">0</h2>
+                        <span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full mt-1">การดำเนินการที่จำเป็น</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden min-h-[400px]">
+                    <div class="p-6 border-b border-gray-50">
+                        <h2 class="font-bold text-slate-800 text-lg">รายการรอการหยิบจากชั้นหนังสือ</h2>
+                        <p class="text-xs text-gray-400 mt-1">หนังสือที่สมาชิกจองไว้ กำลังรอให้หยิบจากชั้นวาง</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50/50 border-b border-gray-100 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                        <div class="col-span-6 md:col-span-5">รายละเอียดหนังสือ</div>
+                        <div class="col-span-3 md:col-span-2 text-center">ที่ตั้ง</div>
+                        <div class="col-span-3 md:col-span-3 text-center">เวลาที่ร้องขอ</div>
+                        <div class="hidden md:block col-span-2"></div> 
+                    </div>
+
+                    <div id="pendingListContainer" class="flex-1 overflow-y-auto hide-scroll p-2"></div>
+                </div>
+
+            </div>
+
+            <div id="overduePanel" class="w-full lg:w-80 flex flex-col gap-4 hidden">
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex-1 overflow-hidden flex flex-col">
+                    <h2 class="font-bold text-red-600 text-lg mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> ล่าช้ากว่าเวลาที่กำหนด
+                    </h2>
+                    <p class="text-[10px] text-gray-500 font-medium mb-6">การจองหมดอายุแล้ว โปรดติดต่อหัวหน้านักศึกษา</p>
+
+                    <div id="overdueListContainer" class="flex-1 overflow-y-auto hide-scroll space-y-4 pr-2"></div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function goToManagePage() {
+            window.location.href = 'check_requests.html';
+        }
+
+        function logoutLibrarian() {
+            if(confirm('ต้องการออกจากระบบจัดการใช่หรือไม่?')) {
+                localStorage.removeItem('isLibrarianLoggedIn');
+                window.location.href = '../login.html';
+            }
+        }
+
+        function fetchDashboardData() {
+            let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            let studentUser = JSON.parse(localStorage.getItem('libraryUser')) || {};
+            let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+
+            const pendingContainer = document.getElementById('pendingListContainer');
+            const overdueContainer = document.getElementById('overdueListContainer');
+            const overduePanel = document.getElementById('overduePanel');
+
+            let pendingBooks = reservations.filter(r => r.status === 'pending');
+            pendingContainer.innerHTML = '';
+
+            if (pendingBooks.length === 0) {
+                pendingContainer.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400 py-10">
+                        <i class="fa-solid fa-clipboard-check text-4xl mb-3 text-gray-200"></i>
+                        <p class="text-sm font-medium">ไม่มีรายการรอหยิบในขณะนี้</p>
+                    </div>`;
+            } else {
+                pendingBooks.forEach((book, index) => {
+                    let location = "A-12-04"; 
+                    if(index % 2 !== 0) location = "B-05-11";
+                    let borrowerName = studentUser.fullname || 'สมบัติ ใจดี';
+
+                    pendingContainer.innerHTML += `
+                    <div class="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 items-center rounded-xl mx-2">
+                        <div class="col-span-6 md:col-span-5 flex items-start gap-3">
+                            <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100">
+                                <img src="${book.cover}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="py-0.5">
+                                <h3 class="font-bold text-slate-800 text-xs md:text-sm leading-tight mb-0.5 line-clamp-2">${book.title}</h3>
+                                <p class="text-[9px] text-gray-400 mb-1 line-clamp-1">${book.author} | ID: ${book.callNumber || 'N/A'}</p>
+                                <p class="text-[10px] font-medium text-purple-700 bg-purple-50 inline-block px-1.5 rounded">ชื่อ ${borrowerName}</p>
+                            </div>
+                        </div>
+                        <div class="col-span-3 md:col-span-2 text-center flex flex-col justify-center">
+                            <span class="text-xs font-bold text-slate-700 leading-tight">${location.split('-').join('<br>')}</span>
+                        </div>
+                        <div class="col-span-3 md:col-span-3 text-center flex flex-col justify-center">
+                            <span class="text-xs font-bold text-slate-800">10:30 AM</span>
+                            <span class="text-[9px] text-purple-600 font-medium">In queue</span>
+                        </div>
+                        <div class="col-span-12 md:col-span-2 flex justify-end md:justify-center mt-2 md:mt-0">
+                            <button onclick="goToManagePage()" class="bg-[#8b31ff] hover:bg-purple-700 text-white text-[11px] font-bold px-5 py-2 rounded-lg shadow-sm transition-colors w-full md:w-auto">
+                                จัดการ
+                            </button>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            let checkedOutCount = activeLoans.length;
+            let overdueBooks = [];
+            let d = new Date();
+            d.setDate(d.getDate() + simulatedDaysOffset);
+            const simDate = d;
+
+            activeLoans.forEach(book => {
+                if(book.borrowTimestamp) {
+                    let borrowDate = new Date(book.borrowTimestamp);
+                    let dueDate = new Date(borrowDate);
+                    dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                    if (simDate > dueDate) {
+                        let diffTime = Math.abs(simDate - dueDate);
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        book.overdueDays = diffDays;
+                        overdueBooks.push(book);
+                    }
+                }
+            });
+
+            document.getElementById('statCheckedOut').textContent = checkedOutCount;
+            document.getElementById('statOverdue').textContent = overdueBooks.length;
+
+            if (overdueBooks.length > 0) {
+                overduePanel.classList.remove('hidden');
+                overdueContainer.innerHTML = '';
+                overdueBooks.forEach(book => {
+                    let borrowerName = studentUser.fullname || 'สมบัติ ใจดี';
+                    let timeText = book.overdueDays <= 1 ? "21 ชั่วโมงที่แล้ว" : `${book.overdueDays} วันที่แล้ว`;
+
+                    overdueContainer.innerHTML += `
+                    <div class="bg-red-50/50 border border-red-100 rounded-xl p-3 flex gap-3 relative">
+                        <div class="w-12 h-16 bg-gray-200 rounded overflow-hidden shrink-0 shadow-sm">
+                            <img src="${book.cover}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow py-0.5">
+                            <h4 class="font-bold text-slate-800 text-xs leading-tight mb-0.5 line-clamp-1">${book.title}</h4>
+                            <p class="text-[9px] text-gray-500 mb-1.5">ชื่อ ${borrowerName}</p>
+                            <div class="bg-white text-red-600 text-[10px] font-bold px-2 py-1 rounded inline-block shadow-sm">
+                                หมดอายุเมื่อ ${timeText}
+                            </div>
+                        </div>
+                        <div class="absolute bottom-3 right-3">
+                            <button onclick="goToManagePage()" class="bg-[#8b31ff] hover:bg-purple-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+                                จัดการ
+                            </button>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                overduePanel.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('isLibrarianLoggedIn') !== 'true') window.location.href = '../login.html';
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 2000);
+        });
+    </script>
+</body>
+</html>
