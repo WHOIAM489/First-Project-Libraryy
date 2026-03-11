@@ -12,7 +12,7 @@
 <body class="bg-[#f8f9fc] min-h-screen flex flex-col">
 
     <nav class="bg-white px-6 py-4 shadow-sm sticky top-0 z-50 flex justify-between items-center">
-        <a href="main.html" class="text-xl text-slate-800 hover:text-purple-600 transition-colors px-2"><i class="fa-solid fa-chevron-left"></i></a>
+        <a href="../user/Main.html" class="text-xl text-slate-800 hover:text-purple-600 transition-colors px-2"><i class="fa-solid fa-chevron-left"></i></a>
         <h1 class="font-bold text-lg text-slate-800">รถเข็นของฉัน</h1>
         <div class="w-8"></div> 
     </nav>
@@ -60,7 +60,7 @@
             const container = document.getElementById('cartItemsContainer');
             const totalDisplay = document.getElementById('totalBooks');
             
-            container.innerHTML = ''; /
+            container.innerHTML = ''; 
             totalDisplay.textContent = `หนังสือ ${cart.length} เล่ม`;
 
             if(cart.length === 0) {
