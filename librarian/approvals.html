@@ -11,12 +11,10 @@
         body { font-family: 'Kanit', sans-serif; background-color: #f4f2f7; } 
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* สไตล์สำหรับ Toast Notification */
         .toast {
             position: fixed;
             top: 20px;
-            right: -300px; /* ซ่อนไว้นอกจอก่อน */
+            right: -300px; 
             background: white;
             color: #333;
             padding: 16px 20px;
@@ -92,7 +90,7 @@
         <div class="flex-1 overflow-y-auto px-8 py-8 flex flex-col xl:flex-row gap-8 hide-scroll">
             
             <div class="flex-1 flex flex-col min-w-0 border-r-0 xl:border-r border-gray-200 xl:pr-8">
-                <h3 class="font-medium text-gray-500 text-sm mb-4 text-center">การอนุมัติการยืม (คิวจอง)</h3>
+                <h3 class="font-medium text-gray-500 text-sm mb-4 text-center">การอนุมัติการยืม (นักศึกษามารับหนังสือ)</h3>
                 <div id="borrowApprovalsContainer" class="space-y-6"></div>
             </div>
 
@@ -120,7 +118,6 @@
                 toastIcon.className = 'fa-solid fa-circle-xmark text-xl';
             }
 
-
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
@@ -138,7 +135,6 @@
                 window.location.href = '../login.html';
             }
         }
-
 
         function calculateUserFines() {
             let total = 0;
@@ -197,7 +193,6 @@
                     <span class="text-green-700 font-bold">฿0.00</span>
                    </div>`;
 
-
             const borrowContainer = document.getElementById('borrowApprovalsContainer');
             let pendingBorrows = reservations.filter(r => r.status === 'pending');
             
@@ -210,12 +205,20 @@
             } else {
                 let bookListHTML = '';
                 pendingBorrows.forEach(book => {
+                    let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+                    let d = new Date(); d.setDate(d.getDate() + simulatedDaysOffset);
+                    d.setDate(d.getDate() + parseInt(book.duration || 15));
+                    let expectedReturn = d.toLocaleDateString('th-TH', { month: 'short', day: 'numeric', year: 'numeric' });
+
                     bookListHTML += `
                         <div class="flex gap-4 items-start py-3 border-b border-gray-50 last:border-0">
                             <div class="w-12 h-16 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover"></div>
                             <div class="flex-grow py-0.5">
                                 <h4 class="font-bold text-slate-800 text-sm leading-tight mb-1">${book.title}</h4>
-                                <div class="flex items-center gap-1.5 text-[10px] text-yellow-600 font-bold"><i class="fa-solid fa-hourglass-half"></i> รอการอนุมัติ (คิวจอง)</div>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="flex items-center gap-1.5 text-[10px] text-yellow-600 font-bold"><i class="fa-solid fa-hourglass-half"></i> รอตรวจสอบหน้านักศึกษา</span>
+                                    <span class="text-[9px] text-gray-400">เมื่ออนุมัติ จะต้องคืนภายใน: ${expectedReturn}</span>
+                                </div>
                             </div>
                         </div>`;
                 });
@@ -225,7 +228,7 @@
                         ${fineBadgeHTML}
                         <div class="mb-4">${bookListHTML}</div>
                         <div class="flex gap-3 mt-4">
-                            <button onclick="approveBorrow()" class="flex-1 bg-[#32CD32] hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">อนุมัติให้รับ ${pendingBorrows.length} เล่ม</button>
+                            <button onclick="approveBorrow()" class="flex-1 bg-[#32CD32] hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">อนุมัติให้ยืม ${pendingBorrows.length} เล่ม</button>
                             <button onclick="rejectBorrow()" class="flex-1 bg-[#ee1d23] hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">ไม่อนุมัติ</button>
                         </div>
                     </div>`;
@@ -273,22 +276,42 @@
             }
         }
 
+
         function approveBorrow() {
             let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
             let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            
             let pendingBooks = reservations.filter(r => r.status === 'pending');
+            let otherReservations = reservations.filter(r => r.status !== 'pending'); // เล่มอื่นที่ยังไม่เกี่ยว
+
+            let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            let d = new Date(); d.setDate(d.getDate() + simulatedDaysOffset);
 
             if(pendingBooks.length > 0) {
-                reservations.forEach(book => {
-                    if (book.status === 'pending') {
-                        book.status = 'ready'; 
-                        notifs.push({ id: Date.now() + Math.random(), title: 'อนุมัติการจองแล้ว!', message: `หนังสือ "${book.title}" พร้อมให้คุณมารับที่เคาน์เตอร์แล้ว!`, icon: 'fa-check', color: 'green' });
-                    }
+                pendingBooks.forEach(book => {
+                    book.status = 'active';
+                    book.borrowTimestamp = d.getTime(); 
+                    book.displayType = 'active';
+                    
+
+                    activeLoans.push(book);
+
+                    notifs.push({ 
+                        id: Date.now() + Math.random(), 
+                        title: 'อนุมัติการยืมแล้ว!', 
+                        message: `หนังสือ "${book.title}" อนุมัติให้ยืมเรียบร้อย ระยะเวลา ${book.duration} วัน`, 
+                        icon: 'fa-check', 
+                        color: 'green' 
+                    });
                 });
-                localStorage.setItem('libraryReservations', JSON.stringify(reservations));
+
+
+                localStorage.setItem('libraryReservations', JSON.stringify(otherReservations));
+                localStorage.setItem('activeLoans', JSON.stringify(activeLoans));
                 localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
                 
-                showToast('อนุมัติการจองสำเร็จแล้ว!', 'success');
+                showToast('อนุมัติการยืมสำเร็จ! เริ่มนับเวลา', 'success');
                 fetchApprovalData();
             }
         }

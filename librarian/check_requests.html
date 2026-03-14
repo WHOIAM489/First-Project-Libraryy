@@ -136,11 +136,12 @@
             }
         }
 
-
         function fetchAndSyncAllUsersData() {
             let allRegisteredUsers = JSON.parse(localStorage.getItem('allLibraryUsers')) || [];
             let activeLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
             let reservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let historyRaw = JSON.parse(localStorage.getItem('loanHistory')) || []; 
+            let unpaidFinesRaw = JSON.parse(localStorage.getItem('unpaidFines')) || []; // ดึงบิลค้างชำระ
             let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
 
             let d = new Date();
@@ -153,7 +154,6 @@
                 renderUserList([]); updateEmptySidebar(); return;
             }
 
-
             allRegisteredUsers.forEach(user => {
                 let userBooks = []; 
                 let userFines = 0; 
@@ -162,12 +162,19 @@
                 let userReserved = 0;
 
 
-                reservationsRaw.forEach(book => {
+                let userReservations = reservationsRaw.filter(r => r.userId === user.studentID);
+                let userLoans = activeLoansRaw.filter(l => l.userId === user.studentID);
+                let userHistory = historyRaw.filter(h => h.userId === user.studentID);
+                let userUnpaidFines = unpaidFinesRaw.filter(f => f.userId === user.studentID || !f.userId); // ดึงค่าปรับค้าง
+
+
+                userReservations.forEach(book => {
                     let processedBook = {...book, bookType: 'reservation'};
                     userReserved++; userBooks.push(processedBook);
                 });
 
-                activeLoansRaw.forEach(book => {
+
+                userLoans.forEach(book => {
                     let processedBook = {...book, bookType: 'loan'};
                     if(book.borrowTimestamp) {
                         let borrowDate = new Date(book.borrowTimestamp);
@@ -178,8 +185,11 @@
                         if (simDate > dueDate) {
                             let diffTime = Math.abs(simDate - dueDate);
                             let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                            processedBook.isOverdue = true; processedBook.overdueDays = diffDays;
-                            userFines += (diffDays * 5); userOverdue++;
+                            processedBook.isOverdue = true; 
+                            processedBook.overdueDays = diffDays;
+                            processedBook.fineAmount = diffDays * 5; // คำนวณค่าปรับเก็บไว้
+                            userFines += processedBook.fineAmount; 
+                            userOverdue++;
                         } else {
                             let diffTime = dueDate - simDate;
                             let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
@@ -189,7 +199,31 @@
                     }
                     userBooks.push(processedBook);
                 });
-                // --------------------------------------------------------
+
+                userUnpaidFines.forEach(fine => {
+                    userFines += parseFloat(fine.fineAmount || 0);
+                    userBooks.push({
+                        ...fine,
+                        bookType: 'unpaid',
+                        title: fine.title || 'ไม่ระบุชื่อหนังสือ',
+                        cover: fine.cover || 'https://via.placeholder.com/40x60',
+                        fineAmount: parseFloat(fine.fineAmount || 0)
+                    });
+                });
+
+                userHistory.forEach(book => {
+                    let processedBook = {...book, bookType: 'history'};
+                    if (book.returnedTimestamp) {
+                        let rDate = new Date(book.returnedTimestamp);
+                        let formatOpts = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                        processedBook.returnedDateStr = rDate.toLocaleDateString('th-TH', formatOpts);
+                    } else if (book.cancelDate) {
+                        processedBook.returnedDateStr = book.cancelDate; 
+                    } else {
+                        processedBook.returnedDateStr = 'ไม่ระบุเวลา';
+                    }
+                    userBooks.push(processedBook);
+                });
 
                 allSystemData.push({
                     id: user.studentID,
@@ -204,7 +238,6 @@
                     reservedCount: userReserved
                 });
             });
-
 
             if(!currentlySelectedUserId && allSystemData.length > 0) {
                 currentlySelectedUserId = allSystemData[0].id;
@@ -228,7 +261,8 @@
                     booksHTML = `<p class="text-xs text-gray-400 text-center py-4 bg-gray-50 rounded-lg">ผู้ใช้นี้ยังไม่มีรายการจองและยืมหนังสือ</p>`;
                 } else {
                     userData.books.forEach(book => {
-                        let statusDot = ''; let statusBadge = '';
+                        let statusDot = ''; let statusBadge = ''; let extraInfo = '';
+                        
                         if (book.bookType === 'reservation') {
                             if (book.status === 'pending') {
                                 statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div> <span class="text-slate-700 font-bold">รอการอนุมัติ</span>`;
@@ -237,26 +271,43 @@
                                 statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-green-500"></div> <span class="text-slate-700 font-bold">รอรับที่เคาน์เตอร์</span>`;
                                 statusBadge = `<span class="bg-green-50 text-green-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">อนุมัติแล้ว (พร้อมรับ)</span>`;
                             }
-                        } else if (book.bookType === 'loan') {
+                        } 
+                        else if (book.bookType === 'loan') {
                             statusDot = book.isOverdue 
                                 ? `<div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> <span class="text-slate-700 font-bold">หมดวันที่ ${book.dueDateStr}</span>`
                                 : `<div class="w-1.5 h-1.5 rounded-full bg-gray-400"></div> <span class="text-slate-700 font-bold">หมดวันที่ ${book.dueDateStr}</span>`;
                             statusBadge = book.isOverdue
-                                ? `<span class="bg-red-600 text-white px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">เลยกำหนด ${book.overdueDays} วัน</span>`
+                                ? `<span class="bg-red-600 text-white px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">เลยกำหนด ${book.overdueDays} วัน (ปรับ ฿${book.fineAmount})</span>`
                                 : `<span class="bg-[#e2e8f0] text-gray-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">กำลังยืม (เหลือ ${book.daysLeft} วัน)</span>`;
+                        }
+ 
+                        else if (book.bookType === 'unpaid') {
+                            statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-red-600"></div> <span class="text-red-600 font-bold">บิลค้างชำระ</span>`;
+                            statusBadge = `<span class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">ค่าปรับค้างจ่าย ฿${book.fineAmount}</span>`;
+                        }
+
+                        else if (book.bookType === 'history') {
+                            if(book.status === 'Returned') {
+                                statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> <span class="text-slate-700 font-bold">รับคืนเมื่อ ${book.returnedDateStr}</span>`;
+                                statusBadge = `<span class="bg-blue-50 text-blue-600 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">คืนเรียบร้อยแล้ว</span>`;
+                                extraInfo = `<span class="ml-2 text-[9px] bg-gray-100 text-gray-500 px-1.5 rounded border border-gray-200">ยืม ${book.duration} วัน</span>`;
+                            } else if(book.status === 'Cancelled') {
+                                statusDot = `<div class="w-1.5 h-1.5 rounded-full bg-gray-300"></div> <span class="text-slate-500 font-bold">ยกเลิกเมื่อ ${book.returnedDateStr}</span>`;
+                                statusBadge = `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded shadow-sm text-[10px] font-bold whitespace-nowrap">ถูกยกเลิกการจอง</span>`;
+                            }
                         }
 
                         booksHTML += `
                             <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded-lg">
                                 <div class="flex items-center gap-4 w-1/2">
-                                    <div class="w-10 h-14 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover"></div>
+                                    <div class="w-10 h-14 bg-gray-200 rounded shadow-sm overflow-hidden shrink-0 border border-gray-100"><img src="${book.cover}" class="w-full h-full object-cover ${(book.bookType === 'history' || book.bookType === 'unpaid') ? 'grayscale opacity-70' : ''}"></div>
                                     <div class="truncate">
-                                        <h4 class="font-bold text-slate-800 text-sm leading-tight mb-0.5 truncate">${book.title}</h4>
-                                        <p class="text-[9px] text-gray-400 truncate">${book.author}</p>
+                                        <h4 class="font-bold ${(book.bookType === 'history' || book.bookType === 'unpaid') ? 'text-gray-500' : 'text-slate-800'} text-sm leading-tight mb-0.5 truncate">${book.title}</h4>
+                                        <p class="text-[9px] text-gray-400 truncate">${book.author || '-'}</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-6 w-1/2 justify-end">
-                                    <div class="flex items-center gap-2 text-[10px]">${statusDot}</div>
+                                <div class="flex flex-col items-end justify-center w-1/2">
+                                    <div class="flex items-center gap-2 text-[10px] mb-1">${statusDot} ${extraInfo}</div>
                                     <div>${statusBadge}</div>
                                 </div>
                             </div>`;
@@ -265,10 +316,13 @@
 
                 let isSelectedClass = (userData.id === currentlySelectedUserId) ? 'ring-2 ring-purple-400 bg-purple-50/10' : 'hover:shadow-md';
                 
-
                 let profileImgHtml = userData.pic 
                     ? `<img src="${userData.pic}" class="w-10 h-10 rounded-full object-cover border border-gray-200">`
                     : `<div class="w-10 h-10 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center border border-purple-200"><i class="fa-solid fa-user"></i></div>`;
+
+                let fineBadgeHtml = userData.fines > 0 
+                    ? `<span class="text-red-600 bg-red-100 border border-red-200 px-2 py-0.5 rounded-full ml-2">ค้าง ฿${userData.fines}</span>`
+                    : '';
 
                 container.innerHTML += `
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 transition-all cursor-pointer ${isSelectedClass}" onclick="selectUser('${userData.id}')">
@@ -280,8 +334,8 @@
                                     <p class="text-[10px] text-gray-500 font-mono">ID: ${userData.id}</p>
                                 </div>
                             </div>
-                            <div class="bg-gray-50 text-gray-500 px-3 py-1 rounded-full text-xs font-bold border border-gray-100">
-                                ${userData.books.length} รายการ
+                            <div class="bg-gray-50 text-gray-500 px-3 py-1 rounded-full text-xs font-bold border border-gray-100 flex items-center">
+                                ${userData.books.length} รายการ ${fineBadgeHtml}
                             </div>
                         </div>
                         <div class="space-y-1">${booksHTML}</div>
@@ -313,8 +367,10 @@
                 iconSide.classList.remove('hidden');
             }
 
-            document.getElementById('profileTotalItems').textContent = userData.books.length; 
-            document.getElementById('profileTotalFines').textContent = userData.fines;
+            let activeItemsCount = userData.activeCount + userData.overdueCount + userData.reservedCount;
+            document.getElementById('profileTotalItems').textContent = activeItemsCount; 
+            document.getElementById('profileTotalFines').textContent = userData.fines > 0 ? userData.fines : '0';
+            
             document.getElementById('profileOverdueCount').textContent = `${userData.overdueCount} เล่ม`;
             document.getElementById('profileActiveCount').textContent = `${userData.activeCount} เล่ม`;
             document.getElementById('profileReservedCount').textContent = `${userData.reservedCount} เล่ม`;

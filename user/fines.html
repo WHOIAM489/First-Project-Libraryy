@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UP Library - ชำระค่าปรับ</title>
+    <title id="pageTitle">UP Library - ชำระค่าปรับ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style> body { font-family: 'Kanit', sans-serif; } </style>
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
 </head>
 <body class="bg-[#f8f9fc] min-h-screen flex flex-col relative overflow-x-hidden">
 
     <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            
+        <div class="max-w-7xl mx-auto flex justify-between items-center relative">
             <div class="flex items-center gap-3">
-                <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors mr-2">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
                 <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
                     <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
                     <div class="text-slate-800 leading-tight">
@@ -27,7 +29,43 @@
             </div>
             
             <div class="flex items-center gap-3 md:gap-4">
-                
+                <div class="relative">
+                    <button onclick="toggleMainMenu()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-slate-800 transition-colors focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+
+                    <div id="mainMenuDropdown" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="p-2 space-y-1">
+                            <a href="main.html" class="flex items-center gap-3 px-4 py-3 hover:bg-green-50 text-slate-700 hover:text-green-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-book"></i></div>
+                                <span class="text-sm font-bold">ค้นหาหนังสือ</span>
+                            </a>
+                            <a href="reservations.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-truck-fast"></i></div>
+                                <span class="text-sm font-bold">การจองของฉัน</span>
+                            </a>
+                            <a href="return.html" class="flex items-center gap-3 px-4 py-3 hover:bg-green-50 text-slate-700 hover:text-green-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-book-bookmark"></i></div>
+                                <span class="text-sm font-bold">คืนหนังสือ</span>
+                            </a>
+                            <a href="fines.html" class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-50 text-slate-700 hover:text-yellow-700 rounded-xl transition-colors relative">
+                                <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><i class="fa-solid fa-money-bill-wave"></i></div>
+                                <span class="text-sm font-bold">จ่าย ค่าปรับ</span>
+                                <span id="fineBadgeMenu" class="hidden absolute right-4 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">0</span>
+                            </a>
+                            <a href="library_rooms.html" class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-slate-700 hover:text-purple-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><i class="fa-solid fa-door-open"></i></div>
+                                <span class="text-sm font-bold">ห้องสมุด</span>
+                            </a>
+                            <div class="h-px bg-gray-100 my-1"></div>
+                            <a href="help.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-slate-600 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"><i class="fa-solid fa-circle-question"></i></div>
+                                <span class="text-sm font-bold">ต้องการความช่วยเหลือ</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
@@ -47,14 +85,11 @@
                     </div>
                 </div>
 
-                <span id="userNameDisplay" class="text-sm text-slate-600 font-medium hidden sm:block pl-2"></span>
-                
-                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer ml-1">
                     <a href="profile.html" class="block w-full h-full">
                         <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
                     </a>
                 </div>
-
             </div>
         </div>
     </nav>
@@ -157,41 +192,18 @@
     </div>
 
     <script>
-        let allBorrowedBooks = []; 
-        let activeLoansRaw = [];
-        let reservationsRaw = [];
-        let unpaidFinesRaw = []; 
-        
-        let overdueBooks = [];
-        let selectedFines = []; 
-        let totalFine = 0;
-        
-        let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
-
-        function getSimulatedDate() {
-            let d = new Date();
-            d.setDate(d.getDate() + simulatedDaysOffset);
-            d.setHours(0,0,0,0);
-            return d;
+        function toggleMainMenu() {
+            const menu = document.getElementById('mainMenuDropdown');
+            menu.classList.toggle('hidden');
         }
 
-        function skipTime() {
-            let inputDays = prompt("กรุณาระบุจำนวนวันที่ต้องการข้ามเวลาไปข้างหน้า", "10");
-            if(inputDays !== null && inputDays.trim() !== "" && !isNaN(inputDays)) {
-                simulatedDaysOffset += parseInt(inputDays);
-                localStorage.setItem('timeSkipOffset', simulatedDaysOffset);
-                alert(`เร่งเวลาไปข้างหน้าสำเร็จ!`);
-                loadDataAndCalculate();
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mainMenuDropdown');
+            const btn = document.querySelector('button[onclick="toggleMainMenu()"]');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.add('hidden');
             }
-        }
-
-        function resetTime() {
-            simulatedDaysOffset = 0;
-            localStorage.setItem('timeSkipOffset', 0);
-            alert("รีเซ็ตเวลาเรียบร้อยแล้ว!");
-            loadDataAndCalculate();
-        }
-
+        });
 
         function updateCartBadge() {
             const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
@@ -242,20 +254,53 @@
             localStorage.setItem('libraryNotifications', JSON.stringify([]));
             renderNotifications();
         }
-        // ==========================================
+
+
+        let allBorrowedBooks = []; 
+        let activeLoansRaw = [];
+        let reservationsRaw = [];
+        let unpaidFinesRaw = []; 
+        
+        let overdueBooks = [];
+        let selectedFines = []; 
+        let totalFine = 0;
+        
+        let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+
+        function getSimulatedDate() {
+            let d = new Date();
+            d.setDate(d.getDate() + simulatedDaysOffset);
+            d.setHours(0,0,0,0);
+            return d;
+        }
+
+        function skipTime() {
+            let inputDays = prompt("กรุณาระบุจำนวนวันที่ต้องการข้ามเวลาไปข้างหน้า", "10");
+            if(inputDays !== null && inputDays.trim() !== "" && !isNaN(inputDays)) {
+                simulatedDaysOffset += parseInt(inputDays);
+                localStorage.setItem('timeSkipOffset', simulatedDaysOffset);
+                alert(`เร่งเวลาไปข้างหน้าสำเร็จ!`);
+                loadDataAndCalculate();
+            }
+        }
+
+        function resetTime() {
+            simulatedDaysOffset = 0;
+            localStorage.setItem('timeSkipOffset', 0);
+            alert("รีเซ็ตเวลาเรียบร้อยแล้ว!");
+            loadDataAndCalculate();
+        }
 
 
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../login.html';
             
-            // โหลดข้อมูลรูปโปรไฟล์และชื่อ
             const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
             if (storedUser) {
-                if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
+               // if (storedUser.fullname) document.getElementById('userNameDisplay').textContent = 'สวัสดี, ' + storedUser.fullname.split(' ')[0];
                 if (storedUser.profilePic) document.getElementById('navProfileImage').src = storedUser.profilePic;
             }
 
-            // สั่งอัปเดต Navbar
             renderNotifications();
             updateCartBadge();
 
@@ -263,9 +308,17 @@
         });
 
         function loadDataAndCalculate() {
-            activeLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
-            reservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
-            unpaidFinesRaw = JSON.parse(localStorage.getItem('unpaidFines')) || []; 
+            const currentUser = JSON.parse(localStorage.getItem('libraryUser'));
+            const currentUserId = currentUser ? currentUser.studentID : null;
+
+            const allActiveLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            activeLoansRaw = allActiveLoansRaw.filter(b => b.userId === currentUserId || !b.userId);
+
+            const allReservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            reservationsRaw = allReservationsRaw.filter(b => b.userId === currentUserId || !b.userId);
+
+            const allUnpaidFinesRaw = JSON.parse(localStorage.getItem('unpaidFines')) || []; 
+            unpaidFinesRaw = allUnpaidFinesRaw.filter(f => f.userId === currentUserId || !f.userId);
             
             allBorrowedBooks = [];
             totalFine = 0;
@@ -335,15 +388,23 @@
                 }
             };
 
-            activeLoansRaw.forEach((book, index) => processActiveLoan(book, index, 'activeLoans'));
-            reservationsRaw.forEach((book, index) => {
-                if(book.status === 'ready') processActiveLoan(book, index, 'reservations');
+            allActiveLoansRaw.forEach((book, index) => {
+                if(book.userId === currentUserId || !book.userId) processActiveLoan(book, index, 'activeLoans');
+            });
+            allReservationsRaw.forEach((book, index) => {
+                if((book.userId === currentUserId || !book.userId) && book.status === 'ready') processActiveLoan(book, index, 'reservations');
             });
 
-            let user = JSON.parse(localStorage.getItem('libraryUser'));
-            if (user) {
-                user.fines = totalFine;
-                localStorage.setItem('libraryUser', JSON.stringify(user));
+            if (currentUser) {
+                currentUser.fines = totalFine;
+                localStorage.setItem('libraryUser', JSON.stringify(currentUser));
+                const fineBadgeMenu = document.getElementById('fineBadgeMenu');
+                if(totalFine > 0) {
+                    fineBadgeMenu.textContent = totalFine.toFixed(0);
+                    fineBadgeMenu.classList.remove('hidden');
+                } else {
+                    fineBadgeMenu.classList.add('hidden');
+                }
             }
 
             renderStep1();
@@ -434,6 +495,7 @@
             document.getElementById('step1-list').classList.add('hidden');
             document.getElementById('step2-upload').classList.remove('hidden');
             document.getElementById('pageTitle').textContent = 'ยืนยันสลิป';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         let uploadedSlipBase64 = null; 
@@ -480,6 +542,10 @@
             localStorage.setItem('pendingSlips', JSON.stringify(pendingSlips));
 
 
+            let allActiveLoansRaw = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            let allReservationsRaw = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            let allUnpaidFinesRaw = JSON.parse(localStorage.getItem('unpaidFines')) || [];
+
             let actModified = false;
             let resModified = false;
             let unpModified = false;
@@ -488,38 +554,37 @@
                 if(selectedFines.includes(book._uid)) {
                     if(book._source === 'activeLoans') {
                         let idx = parseInt(book._uid.split('_')[1]);
-                        activeLoansRaw[idx].borrowTimestamp = getSimulatedDate().getTime(); 
-                        delete activeLoansRaw[idx].lockedReturnDate; 
-                        delete activeLoansRaw[idx].lockedFineAmount; 
-                        delete activeLoansRaw[idx].lockedOverdueDays; 
+                        allActiveLoansRaw[idx].borrowTimestamp = getSimulatedDate().getTime(); 
+                        delete allActiveLoansRaw[idx].lockedReturnDate; 
+                        delete allActiveLoansRaw[idx].lockedFineAmount; 
+                        delete allActiveLoansRaw[idx].lockedOverdueDays; 
                         actModified = true;
                     } 
                     else if (book._source === 'reservations') {
                         let idx = parseInt(book._uid.split('_')[1]);
-                        reservationsRaw[idx].borrowTimestamp = getSimulatedDate().getTime();
-                        delete reservationsRaw[idx].lockedReturnDate;
-                        delete reservationsRaw[idx].lockedFineAmount; 
-                        delete reservationsRaw[idx].lockedOverdueDays; 
+                        allReservationsRaw[idx].borrowTimestamp = getSimulatedDate().getTime();
+                        delete allReservationsRaw[idx].lockedReturnDate;
+                        delete allReservationsRaw[idx].lockedFineAmount; 
+                        delete allReservationsRaw[idx].lockedOverdueDays; 
                         resModified = true;
                     }
                     else if (book._source === 'unpaidFines') {
-                        // ลบบิลถาวรทิ้งเลย
-                        unpaidFinesRaw = unpaidFinesRaw.filter(f => f.id !== book._uid);
+                        allUnpaidFinesRaw = allUnpaidFinesRaw.filter(f => f.id !== book._uid);
                         unpModified = true;
                     }
                 }
             });
 
-            if(actModified) localStorage.setItem('activeLoans', JSON.stringify(activeLoansRaw));
-            if(resModified) localStorage.setItem('libraryReservations', JSON.stringify(reservationsRaw));
-            if(unpModified) localStorage.setItem('unpaidFines', JSON.stringify(unpaidFinesRaw));
+            if(actModified) localStorage.setItem('activeLoans', JSON.stringify(allActiveLoansRaw));
+            if(resModified) localStorage.setItem('libraryReservations', JSON.stringify(allReservationsRaw));
+            if(unpModified) localStorage.setItem('unpaidFines', JSON.stringify(allUnpaidFinesRaw));
             
-
-            loadDataAndCalculate(); 
 
             document.getElementById('step2-upload').classList.add('hidden');
             document.getElementById('step3-success').classList.remove('hidden');
             document.getElementById('pageTitle').textContent = 'ใบเสร็จรับเงิน';
+            
+            loadDataAndCalculate();
         }
     </script>
 </body>

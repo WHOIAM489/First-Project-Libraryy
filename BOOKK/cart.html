@@ -120,22 +120,45 @@
                 return;
             }
 
+            let currentUser = JSON.parse(localStorage.getItem('libraryUser'));
+            if(!currentUser) {
+                alert('กรุณาเข้าสู่ระบบก่อนทำการจอง');
+                window.location.href = '../login.html';
+                return;
+            }
 
+            let userId = currentUser.studentID;
+            let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
             let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
             
+            let myReservations = reservations.filter(book => book.userId === userId);
+            let myActiveLoans = activeLoans.filter(book => book.userId === userId);
+            let currentTotalBooks = myReservations.length + myActiveLoans.length;
+
+
+            if (currentTotalBooks + cart.length > 5) {
+                let availableSlots = 5 - currentTotalBooks;
+                if (availableSlots <= 0) {
+                    alert(`ไม่สามารถจองได้! โควต้าของคุณเต็มแล้ว (ยืม/จองไปแล้ว ${currentTotalBooks} เล่ม)`);
+                } else {
+                    alert(`ไม่สามารถจองได้! คุณสามารถจองเพิ่มได้อีกแค่ ${availableSlots} เล่มเท่านั้น\n(คุณมีในระบบ ${currentTotalBooks} เล่ม และในรถเข็นมี ${cart.length} เล่ม)`);
+                }
+                return; 
+            }
+
+
             cart.forEach(book => {
                 book.status = 'pending'; 
+                book.userId = userId; 
+                book.userName = currentUser.fullname; 
                 reservations.push(book);
             });
             localStorage.setItem('libraryReservations', JSON.stringify(reservations));
 
- 
             localStorage.removeItem('libraryCart');
-
 
             window.location.href = 'success.html';
         }
-
 
         renderCart();
     </script>

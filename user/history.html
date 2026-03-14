@@ -7,30 +7,98 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style> body { font-family: 'Kanit', sans-serif; } </style>
+    <style> 
+        body { font-family: 'Kanit', sans-serif; } 
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .notif-scroll::-webkit-scrollbar { width: 4px; }
+        .notif-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 10px; }
+    </style>
 </head>
 <body class="bg-[#f8f9fc] min-h-screen flex flex-col">
 
-    <nav class="bg-white px-4 py-3 shadow-sm sticky top-0 z-50 flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <a href="main.html" class="w-8 h-8 flex items-center justify-center text-slate-700 hover:bg-gray-100 rounded-full transition-colors">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <h1 class="font-bold text-slate-800 text-lg">ประวัติการยืม</h1>
-        </div>
-        <div class="flex items-center gap-4">
-            <button class="text-gray-500 hover:text-gray-700"><i class="fa-regular fa-bell"></i></button>
-            <a href="profile.html" class="w-8 h-8 rounded-full bg-orange-100 overflow-hidden border border-gray-200">
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" class="w-full h-full object-cover">
-            </a>
+    <nav class="bg-white px-6 py-3 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center relative">
+            <div class="flex items-center gap-3">
+                <a href="main.html" class="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-2 pr-4 rounded-xl hover:bg-gray-50 transition-colors">
+                    <img src="../pic/Logo_of_University_of_Phayao.svg" alt="Logo" class="w-10 h-10 object-contain">
+                    <div class="text-slate-800 leading-tight">
+                        <h1 class="font-bold text-sm">UP Library</h1>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="relative">
+                    <button onclick="toggleMainMenu()" class="w-10 h-10 rounded-xl hover:bg-gray-100 flex items-center justify-center text-slate-800 transition-colors focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+
+                    <div id="mainMenuDropdown" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="p-2 space-y-1">
+                            <a href="main.html" class="flex items-center gap-3 px-4 py-3 hover:bg-green-50 text-slate-700 hover:text-green-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-book"></i></div>
+                                <span class="text-sm font-bold">ค้นหาหนังสือ</span>
+                            </a>
+                            <a href="reservations.html" class="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-truck-fast"></i></div>
+                                <span class="text-sm font-bold">การจองของฉัน</span>
+                            </a>
+                            <a href="return.html" class="flex items-center gap-3 px-4 py-3 hover:bg-green-50 text-slate-700 hover:text-green-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600"><i class="fa-solid fa-book-bookmark"></i></div>
+                                <span class="text-sm font-bold">คืนหนังสือ</span>
+                            </a>
+                            <a href="fines.html" class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-50 text-slate-700 hover:text-yellow-700 rounded-xl transition-colors relative">
+                                <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><i class="fa-solid fa-money-bill-wave"></i></div>
+                                <span class="text-sm font-bold">จ่าย ค่าปรับ</span>
+                                <span id="fineBadgeMenu" class="hidden absolute right-4 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">0</span>
+                            </a>
+                            <a href="library_rooms.html" class="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 text-slate-700 hover:text-purple-700 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600"><i class="fa-solid fa-door-open"></i></div>
+                                <span class="text-sm font-bold">ห้องสมุด</span>
+                            </a>
+                            <div class="h-px bg-gray-100 my-1"></div>
+                            <a href="help.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-slate-600 rounded-xl transition-colors">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500"><i class="fa-solid fa-circle-question"></i></div>
+                                <span class="text-sm font-bold">ต้องการความช่วยเหลือ</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="../BOOKK/cart.html" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative" title="รถเข็นของฉัน">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartBadgeCount" class="hidden absolute -top-1 -right-1 w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </a>
+
+                <div class="relative">
+                    <button id="notificationBtn" onclick="toggleNotifications()" class="w-10 h-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors relative focus:outline-none">
+                        <i class="fa-regular fa-bell"></i>
+                        <span id="notificationBadge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold text-slate-800 text-sm">การแจ้งเตือน</h3>
+                            <button onclick="clearAllNotifications()" class="text-[11px] font-medium text-purple-600 hover:underline">ลบทั้งหมด</button>
+                        </div>
+                        <div id="notificationList" class="max-h-80 overflow-y-auto notif-scroll bg-white"></div>
+                    </div>
+                </div>
+
+
+                <div class="w-10 h-10 rounded-full bg-orange-100 border-2 border-white shadow-sm overflow-hidden cursor-pointer ml-1">
+                    <a href="profile.html" class="block w-full h-full">
+                        <img id="navProfileImage" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop" alt="User" class="w-full h-full object-cover">
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
-
     <div class="bg-white px-6 py-6 border-b border-gray-200">
         <div class="max-w-5xl mx-auto flex items-center gap-4">
             <div class="relative">
                 <div class="w-16 h-16 rounded-full border-2 border-purple-500 p-0.5 overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-full">
+                    <img id="headerProfileImage" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-full">
                 </div>
                 <div class="absolute -bottom-1 -right-2 bg-purple-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-white">UP</div>
             </div>
@@ -53,44 +121,165 @@
     <main class="flex-grow w-full max-w-5xl mx-auto px-4 py-8">
         
         <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800">ประวัติการยืม</h3>
+            <h3 class="font-bold text-slate-800">ประวัติการยืม/คืน</h3>
             <button onclick="clearAllHistory()" id="clearAllBtn" class="hidden text-xs font-bold text-red-500 hover:underline flex items-center gap-1">
                 <i class="fa-solid fa-trash-can"></i> ล้างประวัติทั้งหมด
             </button>
         </div>
 
-        <div id="historyContainer" class="space-y-4">
-            </div>
+        <div id="historyContainer" class="space-y-4"></div>
     </main>
 
     <script>
+        function toggleMainMenu() {
+            const menu = document.getElementById('mainMenuDropdown');
+            menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mainMenuDropdown');
+            const btn = document.querySelector('button[onclick="toggleMainMenu()"]');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        function getCurrentTotalFines() {
+            let total = 0;
+            const offset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
+            const now = new Date();
+            now.setDate(now.getDate() + offset);
+            now.setHours(0,0,0,0);
+
+            const activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
+            const reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
+            const unpaidFines = JSON.parse(localStorage.getItem('unpaidFines')) || [];
+
+            unpaidFines.forEach(f => { total += (parseFloat(f.fineAmount) || 0); });
+
+            const checkOverdue = (book) => {
+                if (book.borrowTimestamp) {
+                    let dueDate = new Date(book.borrowTimestamp);
+                    dueDate.setDate(dueDate.getDate() + parseInt(book.duration || 15));
+                    dueDate.setHours(0,0,0,0);
+
+                    if (book.lockedFineAmount) {
+                        total += parseFloat(book.lockedFineAmount);
+                    } else if (now > dueDate) {
+                        let diffDays = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
+                        total += (diffDays * 5);
+                    }
+                }
+            };
+
+            activeLoans.forEach(checkOverdue);
+            reservations.forEach(r => { if(r.status === 'ready') checkOverdue(r); });
+
+            return total;
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('libraryCart')) || [];
+            const badge = document.getElementById('cartBadgeCount');
+            if (cart.length > 0) { badge.textContent = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+        }
+
+        function toggleNotifications() { document.getElementById('notificationDropdown').classList.toggle('hidden'); }
+
+        function renderNotifications() {
+            const notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            const list = document.getElementById('notificationList');
+            const badge = document.getElementById('notificationBadge');
+            list.innerHTML = '';
+            if(notifs.length === 0) {
+                badge.classList.add('hidden');
+                list.innerHTML = `<div class="p-8 text-center text-sm text-gray-400">ไม่มีการแจ้งเตือนใหม่</div>`;
+                return;
+            }
+            badge.classList.remove('hidden');
+            [...notifs].reverse().forEach(n => {
+                let iconColor = n.color === 'green' ? 'bg-green-100 text-green-600' : (n.color === 'red' ? 'bg-red-100 text-red-600' : 'bg-purple-100 text-purple-600');
+                list.innerHTML += `
+                    <div class="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors flex gap-3 items-start relative group">
+                        <div class="w-8 h-8 rounded-full ${iconColor} flex items-center justify-center shrink-0 mt-1">
+                            <i class="fa-solid ${n.icon || 'fa-bell'}"></i>
+                        </div>
+                        <div class="flex-grow pr-4">
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight">${n.title}</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-snug">${n.message}</p>
+                        </div>
+                        <button onclick="dismissNotification(${n.id})" class="absolute right-4 top-3 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="ปิดการแจ้งเตือน">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function dismissNotification(id) {
+            let notifs = JSON.parse(localStorage.getItem('libraryNotifications')) || [];
+            notifs = notifs.filter(n => n.id !== id);
+            localStorage.setItem('libraryNotifications', JSON.stringify(notifs));
+            renderNotifications();
+        }
+
+        function clearAllNotifications() {
+            localStorage.setItem('libraryNotifications', JSON.stringify([]));
+            renderNotifications();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             if (isLoggedIn !== 'true') window.location.href = '../login.html';
 
             const storedUser = JSON.parse(localStorage.getItem('libraryUser'));
             if (storedUser) {
-                if (storedUser.fullname) document.getElementById('historyUserName').textContent = storedUser.fullname;
-                if (storedUser.studentID) document.getElementById('historyUserId').textContent = 'Student ID: ' + storedUser.studentID;
+                if (storedUser.fullname) {
+                    document.getElementById('historyUserName').textContent = storedUser.fullname;
+        
+                }
+                if (storedUser.studentID) {
+                    document.getElementById('historyUserId').textContent = 'Student ID: ' + storedUser.studentID;
+                }
+                if (storedUser.profilePic) {
+                    document.getElementById('navProfileImage').src = storedUser.profilePic;
+                    document.getElementById('headerProfileImage').src = storedUser.profilePic;
+                }
             }
 
+            renderNotifications();
+            updateCartBadge();
             renderHistory();
+
+            let totalFines = getCurrentTotalFines();
+            const fineBadgeMenu = document.getElementById('fineBadgeMenu');
+            if(totalFines > 0) {
+                fineBadgeMenu.textContent = totalFines.toFixed(0);
+                fineBadgeMenu.classList.remove('hidden');
+            }
         });
+
 
         function renderHistory() {
             const historyContainer = document.getElementById('historyContainer');
             const clearAllBtn = document.getElementById('clearAllBtn');
-            let loanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
+            
+            let storedUser = JSON.parse(localStorage.getItem('libraryUser'));
+            let currentUserId = storedUser ? storedUser.studentID : null;
+
+            let allLoanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
+            
+            let myHistory = allLoanHistory.filter(h => h.userId === currentUserId || !h.userId);
 
             historyContainer.innerHTML = '';
 
-            // ถ้าไม่มีประวัติ
-            if (loanHistory.length === 0) {
+
+            if (myHistory.length === 0) {
                 clearAllBtn.classList.add('hidden');
                 historyContainer.innerHTML = `
                     <div class="bg-white rounded-xl p-10 text-center shadow-sm border border-gray-100">
                         <i class="fa-solid fa-clock-rotate-left text-4xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500 font-medium">ยังไม่มีประวัติการยืมหนังสือ</p>
+                        <p class="text-gray-500 font-medium">ยังไม่มีประวัติการยืมหรือการจองหนังสือ</p>
                     </div>
                 `;
                 return;
@@ -98,54 +287,56 @@
 
             clearAllBtn.classList.remove('hidden');
 
+            let reversedHistory = [...myHistory].reverse();
 
-            let reversedHistory = [...loanHistory].map((item, originalIndex) => {
-                return { ...item, originalIndex };
-            }).reverse();
-
-            reversedHistory.forEach((book) => {
-                
+            reversedHistory.forEach((book, index) => {
                 let isAvailable = book.id !== 'book2'; 
                 
                 let statusBadge = isAvailable 
-                    ? `<span class="bg-green-50 text-green-600 px-3 py-1 rounded text-[10px] font-bold">ว่าง</span>`
-                    : `<span class="bg-red-50 text-red-500 px-3 py-1 rounded text-[10px] font-bold"><i class="fa-regular fa-circle-xmark mr-1"></i>ไม่ว่าง</span>`;
+                    ? `<span class="bg-green-50 text-green-600 px-3 py-1 rounded text-[10px] font-bold">ว่างให้ยืม</span>`
+                    : `<span class="bg-red-50 text-red-500 px-3 py-1 rounded text-[10px] font-bold"><i class="fa-regular fa-circle-xmark mr-1"></i>ถูกยืมอยู่</span>`;
                 
                 let actionButton = isAvailable
-                    ? `<a href="../BOOKK/${book.id}.html" class="bg-[#8b31ff] hover:bg-purple-700 text-white text-xs font-bold py-2 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"><i class="fa-solid fa-rotate"></i> จองหนังสือ</a>`
-                    : `<button disabled class="bg-gray-100 text-gray-400 text-xs font-bold py-2 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 w-full sm:w-auto"><i class="fa-solid fa-ban"></i> จองหนังสือ</button>`;
+                    ? `<a href="../BOOKK/book_details.html?id=${book.id}" class="bg-[#8b31ff] hover:bg-purple-700 text-white text-xs font-bold py-2 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"><i class="fa-solid fa-rotate"></i> จองอีกครั้ง</a>`
+                    : `<button disabled class="bg-gray-100 text-gray-400 text-xs font-bold py-2 px-6 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 w-full sm:w-auto"><i class="fa-solid fa-ban"></i> ไม่พร้อมจอง</button>`;
 
-                // วันที่จัดเก็บ หรือถ้าไม่มีก็ใช้วันนี้จำลองไปก่อน
-                let dateStr = book.cancelDate || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-                // ป้ายบอกว่านี่คือการ "ยกเลิก" หรือ "คืนแล้ว"
+                let dateStr = "ไม่ระบุเวลา";
+                if(book.returnedTimestamp) {
+                    let rDate = new Date(book.returnedTimestamp);
+                    dateStr = rDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                } else if(book.cancelDate) {
+                    dateStr = book.cancelDate;
+                }
+
+
                 let typeBadge = book.status === 'Cancelled' 
                     ? `<span class="text-[9px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full inline-block mb-1">ยกเลิกการจอง</span>` 
                     : `<span class="text-[9px] bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full inline-block mb-1">คืนหนังสือแล้ว</span>`;
 
                 historyContainer.innerHTML += `
-                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center relative group">
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center relative group hover:shadow-md transition-shadow">
                         
-                        <button onclick="deleteSingleHistory(${book.originalIndex})" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors sm:opacity-0 sm:group-hover:opacity-100" title="ลบประวัตินี้">
+                        <button onclick="deleteSingleHistory('${book.id}')" class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors sm:opacity-0 sm:group-hover:opacity-100" title="ลบประวัตินี้">
                             <i class="fa-solid fa-trash-can text-sm"></i>
                         </button>
 
                         <div class="flex gap-4 items-start w-full sm:w-auto pr-6 sm:pr-0">
                             <div class="w-16 h-24 bg-gray-200 rounded border border-gray-100 overflow-hidden shrink-0">
-                                <img src="${book.cover}" class="w-full h-full object-cover">
+                                <img src="${book.cover}" class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
                             </div>
                             
                             <div class="py-1">
                                 ${typeBadge}
                                 <h4 class="font-bold text-slate-800 text-sm md:text-base leading-tight mt-0.5">${book.title}</h4>
                                 <p class="text-[10px] text-gray-400">${book.author}</p>
-                                <p class="text-[10px] text-gray-500 mt-1">Date: ${dateStr}</p>
+                                <p class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-clock"></i> เมื่อ: ${dateStr}</p>
                             </div>
                         </div>
 
                         <div class="flex flex-col sm:items-end gap-3 w-full sm:w-auto mt-2 sm:mt-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0">
                             <div class="flex items-center gap-2 self-start sm:self-end">
-                                <span class="text-[10px] font-bold text-slate-700">สถานะ :</span>
+                                <span class="text-[10px] font-bold text-slate-700">สถานะปัจจุบัน:</span>
                                 ${statusBadge}
                             </div>
                             ${actionButton}
@@ -157,24 +348,34 @@
         }
 
 
-        function deleteSingleHistory(index) {
+        function deleteSingleHistory(bookId) {
             if(confirm("คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการทำรายการนี้?")) {
-                let loanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
+                let user = JSON.parse(localStorage.getItem('libraryUser'));
+                let currentUserId = user ? user.studentID : null;
+
+                let allLoanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
                 
 
-                loanHistory.splice(index, 1);
+                let targetIndex = allLoanHistory.findIndex(h => h.id === bookId && (h.userId === currentUserId || !h.userId));
                 
-
-                localStorage.setItem('loanHistory', JSON.stringify(loanHistory));
-                
-
-                renderHistory();
+                if(targetIndex !== -1) {
+                    allLoanHistory.splice(targetIndex, 1);
+                    localStorage.setItem('loanHistory', JSON.stringify(allLoanHistory));
+                    renderHistory();
+                }
             }
         }
 
         function clearAllHistory() {
-            if(confirm("คำเตือน: คุณต้องการล้างประวัติการยืมทั้งหมดใช่หรือไม่?\nการกระทำนี้ไม่สามารถกู้คืนได้")) {
-                localStorage.setItem('loanHistory', JSON.stringify([]));
+            if(confirm("คำเตือน: คุณต้องการล้างประวัติทั้งหมดของคุณใช่หรือไม่?\nการกระทำนี้ไม่สามารถกู้คืนได้")) {
+                let user = JSON.parse(localStorage.getItem('libraryUser'));
+                let currentUserId = user ? user.studentID : null;
+
+                let allLoanHistory = JSON.parse(localStorage.getItem('loanHistory')) || [];
+                
+                let otherPeopleHistory = allLoanHistory.filter(h => h.userId !== currentUserId && h.userId !== undefined);
+                
+                localStorage.setItem('loanHistory', JSON.stringify(otherPeopleHistory));
                 renderHistory();
             }
         }

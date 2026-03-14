@@ -112,6 +112,14 @@
     </main>
 
     <script>
+        const defaultBooks = [
+            { id: 'b1', title: 'Introduction to Algorithms', author: 'Thomas H. Cormen', cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=400&auto=format&fit=crop', callNumber: 'QA76.6 .C662', totalStock: 3 },
+            { id: 'b2', title: "Don't Make Me Think", author: 'Steve Krug', cover: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=400&auto=format&fit=crop', callNumber: 'QA76.9 .U83', totalStock: 1 },
+            { id: 'b3', title: "Clean Code", author: 'Robert C. Martin', cover: 'https://images.unsplash.com/photo-1518932945647-7a1c969f8be2?q=80&w=400&auto=format&fit=crop', callNumber: 'QA76.76 .C65', totalStock: 2 },
+            { id: 'b4', title: "The Pragmatic Programmer", author: 'Robert C. Martin', cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=400&auto=format&fit=crop', callNumber: 'QA76.6 .M37', totalStock: 4 },
+            { id: 'b5', title: "Design Patterns", author: 'David Thomas', cover: 'https://images.unsplash.com/photo-1495640388908-05fd920c4a45?q=80&w=400&auto=format&fit=crop', callNumber: 'QA76.76 .P37', totalStock: 2 }
+        ];
+
         function goToManagePage() {
             window.location.href = 'check_requests.html';
         }
@@ -126,7 +134,6 @@
         function fetchDashboardData() {
             let reservations = JSON.parse(localStorage.getItem('libraryReservations')) || [];
             let activeLoans = JSON.parse(localStorage.getItem('activeLoans')) || [];
-            let studentUser = JSON.parse(localStorage.getItem('libraryUser')) || {};
             let simulatedDaysOffset = parseInt(localStorage.getItem('timeSkipOffset')) || 0;
 
             const pendingContainer = document.getElementById('pendingListContainer');
@@ -146,7 +153,9 @@
                 pendingBooks.forEach((book, index) => {
                     let location = "A-12-04"; 
                     if(index % 2 !== 0) location = "B-05-11";
-                    let borrowerName = studentUser.fullname || 'สมบัติ ใจดี';
+                    
+                    // ดึงชื่อคนที่ยืมจริงๆ ถ้ามี
+                    let borrowerName = book.userName || 'สมบัติ ใจดี';
 
                     pendingContainer.innerHTML += `
                     <div class="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-50 items-center rounded-xl mx-2">
@@ -203,7 +212,7 @@
                 overduePanel.classList.remove('hidden');
                 overdueContainer.innerHTML = '';
                 overdueBooks.forEach(book => {
-                    let borrowerName = studentUser.fullname || 'สมบัติ ใจดี';
+                    let borrowerName = book.userName || 'สมบัติ ใจดี';
                     let timeText = book.overdueDays <= 1 ? "21 ชั่วโมงที่แล้ว" : `${book.overdueDays} วันที่แล้ว`;
 
                     overdueContainer.innerHTML += `
@@ -231,7 +240,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if(localStorage.getItem('isLibrarianLoggedIn') !== 'true') window.location.href = '../login.html';
+            
+            let storedBooks = JSON.parse(localStorage.getItem('libraryBooks'));
+            if (!storedBooks || storedBooks.length === 0) {
+                localStorage.setItem('libraryBooks', JSON.stringify(defaultBooks));
+            }
+
             fetchDashboardData();
             setInterval(fetchDashboardData, 2000);
         });
